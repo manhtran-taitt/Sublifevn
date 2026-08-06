@@ -73,6 +73,9 @@ export default function SublimePage() {
   // Language Switcher State ('vi' or 'en')
   const [lang, setLang] = useState<"vi" | "en">("vi");
 
+  // Quote Modal State
+  const [quoteModalOpen, setQuoteModalOpen] = useState(false);
+
   // Product Fader Carousel State
   const [activeSlide, setActiveSlide] = useState(0);
 
