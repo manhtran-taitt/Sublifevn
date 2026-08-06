@@ -160,7 +160,7 @@ export default function SublimePage() {
   const heroLocalRef = useRef<HTMLVideoElement>(null);
   const controlLocalRef = useRef<HTMLVideoElement>(null);
 
-  // Delayed 5s Unmute Timer for Control Video
+  // Delayed 7s Unmute Timer for Control Video
   useEffect(() => {
     const timer = setTimeout(() => {
       setControlMuted(false);
@@ -168,7 +168,7 @@ export default function SublimePage() {
         controlLocalRef.current.muted = false;
         controlLocalRef.current.play().catch(() => {});
       }
-    }, 5000);
+    }, 7000);
     return () => clearTimeout(timer);
   }, []);
 
