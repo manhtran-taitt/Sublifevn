@@ -4,52 +4,69 @@ import React, { useEffect, useRef, useState } from "react";
 import QuoteModal from "@/components/QuoteModal";
 import "./sublime.css";
 
-const COUNTRY_LIST_EN = [
-  { en: "Vietnam", nc: "VN" },
-  { en: "United States", nc: "US" },
-  { en: "United Kingdom", nc: "GB" },
-  { en: "Australia", nc: "AU" },
-  { en: "Canada", nc: "CA" },
-  { en: "China", nc: "CN" },
-  { en: "France", nc: "FR" },
-  { en: "Germany", nc: "DE" },
-  { en: "Hong Kong, China", nc: "HK" },
-  { en: "India", nc: "IN" },
-  { en: "Indonesia", nc: "ID" },
-  { en: "Italy", nc: "IT" },
-  { en: "Japan", nc: "JP" },
-  { en: "Korea, South", nc: "KR" },
-  { en: "Malaysia", nc: "MY" },
-  { en: "New Zealand", nc: "NZ" },
-  { en: "Philippines", nc: "PH" },
-  { en: "Singapore", nc: "SG" },
-  { en: "Taiwan, China", nc: "TW" },
-  { en: "Thailand", nc: "TH" },
-  { en: "United Arab Emirates", nc: "AE" }
-];
-
-const COUNTRY_LIST_VI = [
-  { en: "Việt Nam", nc: "VN" },
-  { en: "Hoa Kỳ (Mỹ)", nc: "US" },
-  { en: "Vương Quốc Anh", nc: "GB" },
-  { en: "Úc (Australia)", nc: "AU" },
-  { en: "Canada", nc: "CA" },
-  { en: "Trung Quốc", nc: "CN" },
-  { en: "Pháp", nc: "FR" },
-  { en: "Đức", nc: "DE" },
-  { en: "Hồng Kông, Trung Quốc", nc: "HK" },
-  { en: "Ấn Độ", nc: "IN" },
-  { en: "Indonesia", nc: "ID" },
-  { en: "Ý (Italy)", nc: "IT" },
-  { en: "Nhật Bản", nc: "JP" },
-  { en: "Hàn Quốc", nc: "KR" },
-  { en: "Malaysia", nc: "MY" },
-  { en: "New Zealand", nc: "NZ" },
-  { en: "Philippines", nc: "PH" },
-  { en: "Singapore", nc: "SG" },
-  { en: "Đài Loan, Trung Quốc", nc: "TW" },
-  { en: "Thái Lan", nc: "TH" },
-  { en: "Các Tiểu Vương Quốc Ả Rập", nc: "AE" }
+const VIETNAM_PROVINCES = [
+  "TP. Hồ Chí Minh",
+  "Hà Nội",
+  "Đà Nẵng",
+  "Bình Dương",
+  "Đồng Nai",
+  "Hải Phòng",
+  "Cần Thơ",
+  "Bà Rịa - Vũng Tàu",
+  "Lâm Đồng (Đà Lạt)",
+  "Khánh Hòa (Nha Trang)",
+  "Kiên Giang (Phú Quốc)",
+  "Quảng Ninh",
+  "Bắc Ninh",
+  "Hưng Yên",
+  "Hải Dương",
+  "Nam Định",
+  "Ninh Bình",
+  "Thái Bình",
+  "Vĩnh Phúc",
+  "Phú Thọ",
+  "Thái Nguyên",
+  "Lạng Sơn",
+  "Lào Cai",
+  "Thanh Hóa",
+  "Nghệ An",
+  "Hà Tĩnh",
+  "Quảng Bình",
+  "Quảng Trị",
+  "Thừa Thiên Huế",
+  "Quảng Nam",
+  "Quảng Ngãi",
+  "Bình Định",
+  "Phú Yên",
+  "Bình Thuận",
+  "Ninh Thuận",
+  "Gia Lai",
+  "Đắc Lắk",
+  "Đắc Nông",
+  "Kon Tum",
+  "Tây Ninh",
+  "Bình Phước",
+  "Long An",
+  "Tiền Giang",
+  "Bến Tre",
+  "Vĩnh Long",
+  "Trà Vinh",
+  "Đồng Tháp",
+  "An Giang",
+  "Hậu Giang",
+  "Sóc Trăng",
+  "Bạc Liêu",
+  "Cà Mau",
+  "Hà Nam",
+  "Hòa Bình",
+  "Sơn La",
+  "Điện Biên",
+  "Lai Châu",
+  "Yên Bái",
+  "Tuyên Quang",
+  "Bắc Kạn",
+  "Cao Bằng",
+  "Hà Giang"
 ];
 
 const GALLERY_IMAGES = [
@@ -76,15 +93,15 @@ export default function SublimePage() {
   // Quote Modal State
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
 
+  // Control Video Audio Delayed Start State (5 Seconds)
+  const [controlAudioStart, setControlAudioStart] = useState(false);
+
   // Product Fader Carousel State
   const [activeSlide, setActiveSlide] = useState(0);
 
   // Lightbox State
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxSrc, setLightboxSrc] = useState("");
-
-  // Floating Inquiry Trigger State
-  const [floatingVisible, setFloatingVisible] = useState(false);
 
   // Form Role Tabbar State
   const [activeRoleIndex, setActiveRoleIndex] = useState(0);
@@ -105,10 +122,10 @@ export default function SublimePage() {
     "Nhà tích hợp hệ thống"
   ];
 
-  // Country Selector State
-  const [countryInput, setCountryInput] = useState("");
-  const [countrySelected, setCountrySelected] = useState<{ en: string; nc: string } | null>(null);
-  const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
+  // Location / Province Selector State
+  const [provinceInput, setProvinceInput] = useState("");
+  const [provinceSelected, setProvinceSelected] = useState<string | null>(null);
+  const [provinceDropdownOpen, setProvinceDropdownOpen] = useState(false);
 
   // Interested Multi-Select State
   const [interestedOptions, setInterestedOptions] = useState<{ [key: string]: boolean }>({
@@ -145,26 +162,20 @@ export default function SublimePage() {
   const [useLocalHeroVideo, setUseLocalHeroVideo] = useState(false);
   const [useLocalControlVideo, setUseLocalControlVideo] = useState(false);
 
+  // Delayed 5s Control Video Audio Timer
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setControlAudioStart(true);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
   // Product Slides cross-fader timer
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveSlide((prev) => (prev + 1) % PRODUCT_SLIDES.length);
     }, 3600);
     return () => clearInterval(timer);
-  }, []);
-
-  // Floating Inquiry Scroll Handler
-  useEffect(() => {
-    const handleScroll = () => {
-      const heroEl = document.querySelector(".hero");
-      if (heroEl) {
-        const rect = heroEl.getBoundingClientRect();
-        setFloatingVisible(rect.bottom <= 0);
-      }
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // Marquee Gallery Animation Loop
@@ -281,10 +292,6 @@ export default function SublimePage() {
       showToast(lang === "vi" ? "Vui lòng nhập chi tiết nhu cầu dự án." : "The content is a required field!");
       return;
     }
-    if (!countrySelected && !countryInput.trim()) {
-      showToast(lang === "vi" ? "Vui lòng chọn Quốc gia/Khu vực." : "The country/Region is a required field!");
-      return;
-    }
 
     setFormLoading(true);
 
@@ -295,7 +302,7 @@ export default function SublimePage() {
       area: formArea.trim(),
       email: formEmail.trim(),
       phone: formConcat.trim(),
-      country: countrySelected ? countrySelected.en : countryInput.trim(),
+      country: provinceSelected || provinceInput.trim() || "Việt Nam",
       interest: selectedInterestedText || "Khác / All",
       content: formContent.trim(),
     };
@@ -319,8 +326,8 @@ export default function SublimePage() {
         setFormConcat("");
         setFormEmail("");
         setFormContent("");
-        setCountryInput("");
-        setCountrySelected(null);
+        setProvinceInput("");
+        setProvinceSelected(null);
       })
       .catch(() => {
         setFormLoading(false);
@@ -335,8 +342,8 @@ export default function SublimePage() {
         setFormConcat("");
         setFormEmail("");
         setFormContent("");
-        setCountryInput("");
-        setCountrySelected(null);
+        setProvinceInput("");
+        setProvinceSelected(null);
       });
   };
 
@@ -348,25 +355,24 @@ export default function SublimePage() {
     }
   };
 
-  const currentCountryList = lang === "vi" ? COUNTRY_LIST_VI : COUNTRY_LIST_EN;
-  const filteredCountries = currentCountryList.filter((c) =>
-    c.en.toLowerCase().includes(countryInput.toLowerCase().trim())
+  const filteredProvinces = VIETNAM_PROVINCES.filter((p) =>
+    p.toLowerCase().includes(provinceInput.toLowerCase().trim())
   );
 
   const interestedOptionsList = [
-    { en: "Wireless Smart Home", vi: "Smart Home Không dây (CoSS)" },
-    { en: "Wired Smart Home", vi: "Smart Home Có dây Bus (CoTP)" }
+    { en: "Wireless Smart Home", vi: "Smart Home Không dây" },
+    { en: "Wired Smart Home", vi: "Smart Home Có dây Bus" }
   ];
 
   const selectedInterestedText = Object.keys(interestedOptions)
     .filter((k) => interestedOptions[k])
-    .map((k) => (lang === "vi" ? (k === "Wireless Smart Home" ? "Smart Home Không dây (CoSS)" : "Smart Home Có dây Bus (CoTP)") : k))
+    .map((k) => (lang === "vi" ? (k === "Wireless Smart Home" ? "Smart Home Không dây" : "Smart Home Có dây Bus") : k))
     .join(", ");
 
   const currentRoles = lang === "vi" ? rolesVI : rolesEN;
 
   return (
-    <div className="sublime-body min-h-screen bg-[#070707] text-[#d8b391] relative">
+    <div className="sublime-body min-h-screen bg-[#070707] text-[#d8b391] relative pb-24">
       {/* GEO Context Layer for Search Engines */}
       <div style={{ display: "none" }} aria-hidden="true">
         <h1>SUBLIME by LifeSmart: Next-Gen Luxury Architectural Intelligence.</h1>
@@ -394,50 +400,51 @@ export default function SublimePage() {
             title="Thạch Anh ITT Official Site"
           >
             <img
-              className="h-[22px] sm:h-[26px] w-auto object-contain max-w-[150px] sm:max-w-[200px]"
+              className="h-[42px] sm:h-[48px] w-auto object-contain max-w-[220px] sm:max-w-[300px]"
               src="/sublime_tob/assets/logo-thachanhitt-gold.png"
               alt="Thạch Anh ITT Logo"
             />
           </a>
         </div>
 
-          <div className="flex items-center gap-3 sm:gap-4">
-            {/* Header Language Switcher */}
-            <div className="flex items-center bg-[#171210] border border-[#d8b391]/30 rounded-full p-1 text-xs">
-              <button
-                type="button"
-                onClick={() => setLang("vi")}
-                className={`px-3 py-1 rounded-full transition-all ${
-                  lang === "vi"
-                    ? "bg-[#ccae8d] text-[#1e1612] font-bold shadow"
-                    : "text-[#d8b391]/70 hover:text-[#d8b391]"
-                }`}
-              >
-                VN
-              </button>
-              <button
-                type="button"
-                onClick={() => setLang("en")}
-                className={`px-3 py-1 rounded-full transition-all ${
-                  lang === "en"
-                    ? "bg-[#ccae8d] text-[#1e1612] font-bold shadow"
-                    : "text-[#d8b391]/70 hover:text-[#d8b391]"
-                }`}
-              >
-                EN
-              </button>
-            </div>
-
-            {/* Yêu cầu tư vấn Button at Header */}
+        <div className="flex items-center gap-3 sm:gap-4">
+          {/* Header Language Switcher */}
+          <div className="flex items-center bg-[#171210] border border-[#d8b391]/30 rounded-full p-1 text-xs">
             <button
               type="button"
-              onClick={() => setQuoteModalOpen(true)}
-              className="bg-gradient-to-r from-[#ccae8d] to-[#d8b391] hover:from-[#d8b391] hover:to-[#e6c4a5] text-[#120e0c] font-bold text-xs px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full shadow-lg transition-transform hover:scale-105 active:scale-95"
+              onClick={() => setLang("vi")}
+              className={`px-3 py-1 rounded-full transition-all ${
+                lang === "vi"
+                  ? "bg-[#ccae8d] text-[#1e1612] font-bold shadow"
+                  : "text-[#d8b391]/70 hover:text-[#d8b391]"
+              }`}
             >
-              {lang === "vi" ? "Yêu cầu tư vấn" : "Request Consultation"}
+              VN
+            </button>
+            <button
+              type="button"
+              onClick={() => setLang("en")}
+              className={`px-3 py-1 rounded-full transition-all ${
+                lang === "en"
+                  ? "bg-[#ccae8d] text-[#1e1612] font-bold shadow"
+                  : "text-[#d8b391]/70 hover:text-[#d8b391]"
+              }`}
+            >
+              EN
             </button>
           </div>
-        </header>
+
+          <a
+            className="brand-link hidden sm:inline-flex"
+            href="https://iot.ilifesmart.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Open LifeSmart official site"
+          >
+            <span className="site-label">LifeSmart Official Site</span>
+          </a>
+        </div>
+      </header>
 
       <main>
         {/* Hero Section */}
@@ -451,7 +458,6 @@ export default function SublimePage() {
               frameBorder="0"
               allow="autoplay; encrypted-media; picture-in-picture"
               referrerPolicy="strict-origin-when-cross-origin"
-              onError={() => setUseLocalHeroVideo(true)}
             />
           ) : (
             <video
@@ -616,7 +622,11 @@ export default function SublimePage() {
               <iframe
                 id="controlYoutube"
                 className="control-video control-youtube"
-                src="https://www.youtube.com/embed/ohrEHPSA7Vo?autoplay=1&mute=1&controls=1&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1"
+                src={
+                  controlAudioStart
+                    ? "https://www.youtube.com/embed/ohrEHPSA7Vo?autoplay=1&mute=0&controls=1&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1"
+                    : "https://www.youtube.com/embed/ohrEHPSA7Vo?autoplay=1&mute=1&controls=1&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1"
+                }
                 title="SUBLIME control video"
                 frameBorder="0"
                 allow="autoplay; encrypted-media; picture-in-picture"
@@ -630,7 +640,7 @@ export default function SublimePage() {
                 className="control-video control-local-fallback is-active"
                 src="/sublime_tob/assets/control.mp4"
                 controls
-                muted
+                autoPlay
                 playsInline
                 aria-hidden="true"
               />
@@ -944,7 +954,7 @@ export default function SublimePage() {
           </div>
         </section>
 
-        {/* Partners Section */}
+        {/* Partnerships Section */}
         <section className="partners section-soft2">
           <div className="partner-scene">
             <img src="/sublime_tob/assets/scenery.webp" alt="SUBLIME project scenery" />
@@ -1078,46 +1088,46 @@ export default function SublimePage() {
                         onChange={(e) => setFormEmail(e.target.value)}
                       />
                     </div>
-                    <div className={`item-col2 block-form-col ${countryDropdownOpen ? "is-open" : ""}`}>
-                      <div className="title">{lang === "vi" ? "Quốc gia / Khu vực:" : "Country/Region:"}</div>
+                    <div className={`item-col2 block-form-col ${provinceDropdownOpen ? "is-open" : ""}`}>
+                      <div className="title">{lang === "vi" ? "Khu vực:" : "Location:"}</div>
                       <div className="select-field">
                         <input
-                          id="contactCountry"
+                          id="contactProvince"
                           maxLength={64}
-                          name="country"
+                          name="province"
                           type="text"
                           className="block-form-input"
-                          placeholder={lang === "vi" ? "Chọn Quốc gia" : "Select an option"}
-                          value={countrySelected ? countrySelected.en : countryInput}
-                          onFocus={() => setCountryDropdownOpen(true)}
+                          placeholder={lang === "vi" ? "Chọn Tỉnh / Thành phố" : "Select Location"}
+                          value={provinceSelected || provinceInput}
+                          onFocus={() => setProvinceDropdownOpen(true)}
                           onChange={(e) => {
-                            setCountrySelected(null);
-                            setCountryInput(e.target.value);
-                            setCountryDropdownOpen(true);
+                            setProvinceSelected(null);
+                            setProvinceInput(e.target.value);
+                            setProvinceDropdownOpen(true);
                           }}
                           onBlur={() => {
-                            setTimeout(() => setCountryDropdownOpen(false), 200);
+                            setTimeout(() => setProvinceDropdownOpen(false), 200);
                           }}
                         />
                         <span className="select-arrow" aria-hidden="true" />
                       </div>
-                      <div id="block-form-options" className={countryDropdownOpen ? "show" : ""}>
-                        {filteredCountries.length === 0 ? (
+                      <div id="block-form-options" className={provinceDropdownOpen ? "show" : ""}>
+                        {filteredProvinces.length === 0 ? (
                           <div className="block-form-empty p-3 text-[#cfc6bc88]">
-                            {lang === "vi" ? "Không có dữ liệu" : "no data"}
+                            {lang === "vi" ? "Không tìm thấy Tỉnh/Thành" : "no data"}
                           </div>
                         ) : (
-                          filteredCountries.map((country) => (
+                          filteredProvinces.map((prov) => (
                             <div
-                              key={country.nc}
+                              key={prov}
                               className="block-form-option"
                               onMouseDown={(ev) => {
                                 ev.preventDefault();
-                                setCountrySelected(country);
-                                setCountryDropdownOpen(false);
+                                setProvinceSelected(prov);
+                                setProvinceDropdownOpen(false);
                               }}
                             >
-                              {country.en}
+                              {prov}
                             </div>
                           ))
                         )}
@@ -1252,41 +1262,26 @@ export default function SublimePage() {
         {lightboxSrc && <img src={lightboxSrc} alt="SUBLIME Large preview" />}
       </div>
 
-      {/* Floating Language Widget pinned at corner of screen */}
-      <div className="fixed bottom-6 left-6 z-50 flex items-center bg-[#0d0d0d]/90 border border-[#d8b391]/40 rounded-full p-1.5 backdrop-blur-md shadow-2xl">
+      {/* Sticky Bottom Floating Bar ("Sticker khi kéo") */}
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2.5 sm:gap-3 bg-[#0a0a0a]/90 border border-[#d8b391]/40 rounded-full p-2 sm:p-2.5 backdrop-blur-md shadow-2xl max-w-[92vw]">
         <button
           type="button"
-          onClick={() => setLang("vi")}
-          className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
-            lang === "vi"
-              ? "bg-[#ccae8d] text-[#0a0a0a] shadow-md scale-105"
-              : "text-[#d8b391]/70 hover:text-[#d8b391]"
-          }`}
+          onClick={() => setQuoteModalOpen(true)}
+          className="bg-gradient-to-r from-[#ccae8d] to-[#d8b391] hover:from-[#d8b391] hover:to-[#e6c4a5] text-[#120e0c] font-bold text-xs sm:text-sm px-4 sm:px-5 py-2 sm:py-2.5 rounded-full shadow-lg transition-transform hover:scale-105 active:scale-95 whitespace-nowrap"
         >
-          🇻🇳 VN
+          {lang === "vi" ? "Yêu cầu tư vấn" : "Request Consultation"}
         </button>
-        <button
-          type="button"
-          onClick={() => setLang("en")}
-          className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
-            lang === "en"
-              ? "bg-[#ccae8d] text-[#0a0a0a] shadow-md scale-105"
-              : "text-[#d8b391]/70 hover:text-[#d8b391]"
-          }`}
-        >
-          🇬🇧 EN
-        </button>
-      </div>
 
-      {/* Floating Inquiry Trigger */}
-      <button
-        type="button"
-        className={`floating-inquiry ${floatingVisible ? "is-visible is-fixed" : ""}`}
-        aria-label="Open inquiry form"
-        onClick={scrollToInquiry}
-      >
-        <img src="/sublime_tob/assets/inquiry.webp" alt="Inquiry Icon" />
-      </button>
+        <a
+          href="tel:+84853164350"
+          className="flex items-center gap-1.5 bg-[#1f1916] hover:bg-[#2c231f] border border-[#d8b391]/50 text-[#f3e6d8] font-bold text-xs sm:text-sm px-4 sm:px-5 py-2 sm:py-2.5 rounded-full shadow-lg transition-transform hover:scale-105 active:scale-95 whitespace-nowrap"
+        >
+          <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#ccae8d] animate-bounce" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+          </svg>
+          <span>{lang === "vi" ? "Gọi ngay: 0853.164.350" : "Call: +84 85 316 4350"}</span>
+        </a>
+      </div>
 
       {/* Quote Modal */}
       <QuoteModal isOpen={quoteModalOpen} onClose={() => setQuoteModalOpen(false)} />
