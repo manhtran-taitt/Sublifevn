@@ -10,8 +10,8 @@ interface QuoteModalProps {
 }
 
 export default function QuoteModal({ isOpen: externalIsOpen, onClose: externalOnClose }: QuoteModalProps) {
-  const { language } = useLanguage();
-  const isVi = language === "vi";
+  const { lang } = useLanguage();
+  const isVi = lang === "vi";
 
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
