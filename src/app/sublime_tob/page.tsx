@@ -341,11 +341,19 @@ export default function SublimePage() {
 
       {/* Header Bar */}
       <header className="site-header" aria-label="SUBLIME header">
-        <img
-          className="brand-image"
-          src="/sublime_tob/assets/SBL.webp"
-          alt="SUBLIME"
-        />
+        <div className="flex items-center gap-3 sm:gap-4">
+          <img
+            className="brand-image"
+            src="/sublime_tob/assets/SBL.webp"
+            alt="SUBLIME"
+          />
+          <span className="h-4 sm:h-5 w-[1px] bg-[#d8b391]/30 block" />
+          <img
+            className="h-5 sm:h-6 w-auto object-contain max-w-[140px] sm:max-w-[180px]"
+            src="/sublime_tob/assets/logo-thachanhitt-scaled.png"
+            alt="Thạch Anh ITT Logo"
+          />
+        </div>
 
         <div className="flex items-center gap-4">
           {/* Header Language Switcher */}
