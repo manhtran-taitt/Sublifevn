@@ -3,8 +3,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./sublime.css";
 
-const COUNTRY_LIST = [
-  { en: "Vietnam / Việt Nam", nc: "VN" },
+const COUNTRY_LIST_EN = [
+  { en: "Vietnam", nc: "VN" },
   { en: "United States", nc: "US" },
   { en: "United Kingdom", nc: "GB" },
   { en: "Australia", nc: "AU" },
@@ -24,41 +24,31 @@ const COUNTRY_LIST = [
   { en: "Singapore", nc: "SG" },
   { en: "Taiwan, China", nc: "TW" },
   { en: "Thailand", nc: "TH" },
-  { en: "United Arab Emirates", nc: "AE" },
-  { en: "Abkhazia", nc: "AB" },
-  { en: "Afghanistan", nc: "AF" },
-  { en: "Albania", nc: "AL" },
-  { en: "Algeria", nc: "DZ" },
-  { en: "Andorra", nc: "AD" },
-  { en: "Angola", nc: "AO" },
-  { en: "Argentina", nc: "AR" },
-  { en: "Austria", nc: "AT" },
-  { en: "Belgium", nc: "BE" },
-  { en: "Brazil", nc: "BR" },
-  { en: "Cambodia", nc: "KH" },
-  { en: "Chile", nc: "CL" },
-  { en: "Colombia", nc: "CO" },
-  { en: "Czechia", nc: "CZ" },
-  { en: "Denmark", nc: "DK" },
-  { en: "Egypt", nc: "EG" },
-  { en: "Finland", nc: "FI" },
-  { en: "Greece", nc: "GR" },
-  { en: "Hungary", nc: "HU" },
-  { en: "Ireland", nc: "IE" },
-  { en: "Israel", nc: "IL" },
-  { en: "Laos", nc: "LA" },
-  { en: "Mexico", nc: "MX" },
-  { en: "Netherlands", nc: "NL" },
-  { en: "Norway", nc: "NO" },
-  { en: "Poland", nc: "PL" },
-  { en: "Portugal", nc: "PT" },
-  { en: "Qatar", nc: "QA" },
-  { en: "Russia", nc: "RU" },
-  { en: "Saudi Arabia", nc: "SA" },
-  { en: "Spain", nc: "ES" },
-  { en: "Sweden", nc: "SE" },
-  { en: "Switzerland", nc: "CH" },
-  { en: "Turkey", nc: "TR" }
+  { en: "United Arab Emirates", nc: "AE" }
+];
+
+const COUNTRY_LIST_VI = [
+  { en: "Việt Nam", nc: "VN" },
+  { en: "Hoa Kỳ (Mỹ)", nc: "US" },
+  { en: "Vương Quốc Anh", nc: "GB" },
+  { en: "Úc (Australia)", nc: "AU" },
+  { en: "Canada", nc: "CA" },
+  { en: "Trung Quốc", nc: "CN" },
+  { en: "Pháp", nc: "FR" },
+  { en: "Đức", nc: "DE" },
+  { en: "Hồng Kông, Trung Quốc", nc: "HK" },
+  { en: "Ấn Độ", nc: "IN" },
+  { en: "Indonesia", nc: "ID" },
+  { en: "Ý (Italy)", nc: "IT" },
+  { en: "Nhật Bản", nc: "JP" },
+  { en: "Hàn Quốc", nc: "KR" },
+  { en: "Malaysia", nc: "MY" },
+  { en: "New Zealand", nc: "NZ" },
+  { en: "Philippines", nc: "PH" },
+  { en: "Singapore", nc: "SG" },
+  { en: "Đài Loan, Trung Quốc", nc: "TW" },
+  { en: "Thái Lan", nc: "TH" },
+  { en: "Các Tiểu Vương Quốc Ả Rập", nc: "AE" }
 ];
 
 const GALLERY_IMAGES = [
@@ -79,6 +69,9 @@ const PRODUCT_SLIDES = [
 ];
 
 export default function SublimePage() {
+  // Language Switcher State ('vi' or 'en')
+  const [lang, setLang] = useState<"vi" | "en">("vi");
+
   // Product Fader Carousel State
   const [activeSlide, setActiveSlide] = useState(0);
 
@@ -91,12 +84,21 @@ export default function SublimePage() {
 
   // Form Role Tabbar State
   const [activeRoleIndex, setActiveRoleIndex] = useState(0);
-  const roles = [
-    { en: "Distributor", vi: "Nhà phân phối" },
-    { en: "Installer", vi: "Đơn vị thi công" },
-    { en: "Designer", vi: "KTS / Thợ thiết kế" },
-    { en: "Developer", vi: "Chủ đầu tư / Chủ nhà" },
-    { en: "System Integrator", vi: "Đơn vị tích hợp hệ thống" }
+
+  const rolesEN = [
+    "Distributor",
+    "Installer",
+    "Designer",
+    "Developer",
+    "System Integrator"
+  ];
+
+  const rolesVI = [
+    "Nhà phân phối",
+    "Đơn vị thi công",
+    "KTS / Thiết kế",
+    "Chủ đầu tư / Chủ nhà",
+    "Nhà tích hợp hệ thống"
   ];
 
   // Country Selector State
@@ -106,8 +108,8 @@ export default function SublimePage() {
 
   // Interested Multi-Select State
   const [interestedOptions, setInterestedOptions] = useState<{ [key: string]: boolean }>({
-    "Wireless Smart Home (Smart Home Không dây)": false,
-    "Wired Smart Home (Smart Home Có dây Bus)": false
+    "Wireless Smart Home": false,
+    "Wired Smart Home": false
   });
   const [interestDropdownOpen, setInterestDropdownOpen] = useState(false);
 
@@ -256,27 +258,27 @@ export default function SublimePage() {
     if (formLoading) return;
 
     if (!formName.trim()) {
-      showToast("Vui lòng nhập Họ tên đầy đủ / Please enter your name!");
+      showToast(lang === "vi" ? "Vui lòng nhập Họ tên của bạn." : "The name is a required field!");
       return;
     }
     if (!formConcat.trim()) {
-      showToast("Vui lòng nhập Số điện thoại / Please enter your contact number!");
+      showToast(lang === "vi" ? "Vui lòng nhập Số điện thoại liên hệ." : "Contact Number is a required field!");
       return;
     }
     if (!formEmail.trim()) {
-      showToast("Vui lòng nhập Email / Please enter your email address!");
+      showToast(lang === "vi" ? "Vui lòng nhập địa chỉ Email." : "The email is a required field!");
       return;
     }
     if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formEmail.trim())) {
-      showToast("Định dạng Email chưa chính xác / Please confirm email format.");
+      showToast(lang === "vi" ? "Vui lòng kiểm tra lại định dạng Email." : "Please confirm the format of the email address.");
       return;
     }
     if (!formContent.trim()) {
-      showToast("Vui lòng nhập mô tả nhu cầu / Please enter your project requirements!");
+      showToast(lang === "vi" ? "Vui lòng nhập chi tiết nhu cầu dự án." : "The content is a required field!");
       return;
     }
     if (!countrySelected && !countryInput.trim()) {
-      showToast("Vui lòng chọn Quốc gia/Khu vực / Please select your country!");
+      showToast(lang === "vi" ? "Vui lòng chọn Quốc gia/Khu vực." : "The country/Region is a required field!");
       return;
     }
 
@@ -284,7 +286,11 @@ export default function SublimePage() {
 
     setTimeout(() => {
       setFormLoading(false);
-      showToast("Gửi yêu cầu thành công! Đội ngũ tư vấn sẽ liên hệ với bạn trong thời gian sớm nhất / Submission successful! Our team will contact you shortly.");
+      showToast(
+        lang === "vi"
+          ? "Gửi yêu cầu thành công! Đội ngũ tư vấn sẽ liên hệ với bạn trong thời gian sớm nhất."
+          : "Your submission has been successful. Our customer service will contact you as soon as possible!"
+      );
       setFormName("");
       setFormCompany("");
       setFormArea("");
@@ -304,17 +310,26 @@ export default function SublimePage() {
     }
   };
 
-  const filteredCountries = COUNTRY_LIST.filter((c) =>
+  const currentCountryList = lang === "vi" ? COUNTRY_LIST_VI : COUNTRY_LIST_EN;
+  const filteredCountries = currentCountryList.filter((c) =>
     c.en.toLowerCase().includes(countryInput.toLowerCase().trim())
   );
 
+  const interestedOptionsList = [
+    { en: "Wireless Smart Home", vi: "Smart Home Không dây (CoSS)" },
+    { en: "Wired Smart Home", vi: "Smart Home Có dây Bus (CoTP)" }
+  ];
+
   const selectedInterestedText = Object.keys(interestedOptions)
     .filter((k) => interestedOptions[k])
+    .map((k) => (lang === "vi" ? (k === "Wireless Smart Home" ? "Smart Home Không dây (CoSS)" : "Smart Home Có dây Bus (CoTP)") : k))
     .join(", ");
 
+  const currentRoles = lang === "vi" ? rolesVI : rolesEN;
+
   return (
-    <div className="sublime-body min-h-screen bg-[#070707] text-[#d8b391]">
-      {/* GEO Context Layer for AI Search Engines & SEO */}
+    <div className="sublime-body min-h-screen bg-[#070707] text-[#d8b391] relative">
+      {/* GEO Context Layer for Search Engines */}
       <div style={{ display: "none" }} aria-hidden="true">
         <h1>SUBLIME by LifeSmart: Next-Gen Luxury Architectural Intelligence.</h1>
         <h2>LifeSmart SUBLIME Series: The Sovereign Hybrid Automation System</h2>
@@ -331,15 +346,44 @@ export default function SublimePage() {
           src="/sublime_tob/assets/SBL.webp"
           alt="SUBLIME"
         />
-        <a
-          className="brand-link"
-          href="https://iot.ilifesmart.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Open LifeSmart official site"
-        >
-          <span className="site-label">LifeSmart Official Site</span>
-        </a>
+
+        <div className="flex items-center gap-4">
+          {/* Header Language Switcher */}
+          <div className="flex items-center bg-[#171210] border border-[#d8b391]/30 rounded-full p-1 text-xs">
+            <button
+              type="button"
+              onClick={() => setLang("vi")}
+              className={`px-3 py-1 rounded-full transition-all ${
+                lang === "vi"
+                  ? "bg-[#ccae8d] text-[#1e1612] font-bold shadow"
+                  : "text-[#d8b391]/70 hover:text-[#d8b391]"
+              }`}
+            >
+              VN
+            </button>
+            <button
+              type="button"
+              onClick={() => setLang("en")}
+              className={`px-3 py-1 rounded-full transition-all ${
+                lang === "en"
+                  ? "bg-[#ccae8d] text-[#1e1612] font-bold shadow"
+                  : "text-[#d8b391]/70 hover:text-[#d8b391]"
+              }`}
+            >
+              EN
+            </button>
+          </div>
+
+          <a
+            className="brand-link hidden sm:inline-flex"
+            href="https://iot.ilifesmart.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Open LifeSmart official site"
+          >
+            <span className="site-label">LifeSmart Official Site</span>
+          </a>
+        </div>
       </header>
 
       <main>
@@ -375,17 +419,22 @@ export default function SublimePage() {
         <section className="gallery-section section-soft2" aria-label="Project gallery">
           <div className="gallery-title">
             <h2>
-              THE SOVEREIGN HYBRID HOME AUTOMATION SYSTEM <br />
-              SUBLIME <span className="italic"> by LifeSmart </span>
+              {lang === "vi" ? (
+                <>
+                  HỆ THỐNG TỰ ĐỘNG HÓA NHÀ THÔNG MINH LAI ĐỘC BẢN <br />
+                  SUBLIME <span className="italic"> bởi LifeSmart </span>
+                </>
+              ) : (
+                <>
+                  THE SOVEREIGN HYBRID HOME AUTOMATION SYSTEM <br />
+                  SUBLIME <span className="italic"> by LifeSmart </span>
+                </>
+              )}
             </h2>
-            <p className="text-xl text-[#ccae8d] font-serif mt-2 italic">
-              Hệ thống tự động hóa nhà thông minh lai độc bản — SUBLIME bởi LifeSmart
-            </p>
-            <p className="text-[#cfc6bc] text-base uppercase tracking-widest mt-4 font-sans">
-              Wired or Wireless. Not a Choice. <br />
-              <span className="text-[#d8b391] normal-case tracking-normal">
-                (Có dây hay Không dây. Sự kết hợp hoàn hảo không thỏa hiệp.)
-              </span>
+            <p>
+              {lang === "vi"
+                ? "Kết nối Có dây hay Không dây. Sự kết hợp hoàn hảo không đánh đổi."
+                : "Wired or Wireless. Not a Choice."}
             </p>
           </div>
 
@@ -435,13 +484,24 @@ export default function SublimePage() {
           <div>
             <img className="section-image" src="/sublime_tob/assets/SBL.webp" alt="SUBLIME" />
             <h2>
-              Architectural Switching.
-              <br />
-              Engineered Without Compromise.
+              {lang === "vi" ? (
+                <>
+                  Công tắc kiến trúc cao cấp.
+                  <br />
+                  Đỉnh cao kỹ thuật
+                  <br />
+                  không thỏa hiệp.
+                </>
+              ) : (
+                <>
+                  Architectural Switching.
+                  <br />
+                  Engineered Without
+                  <br />
+                  Compromise.
+                </>
+              )}
             </h2>
-            <p className="text-xl text-[#d8b391] font-serif italic mb-10 -mt-14">
-              Công tắc kiến trúc thượng lưu. Đỉnh cao kỹ nghệ không thỏa hiệp.
-            </p>
 
             <div className="product-fader" aria-label="SUBLIME product finish carousel">
               {PRODUCT_SLIDES.map((slide, idx) => (
@@ -455,16 +515,12 @@ export default function SublimePage() {
             </div>
 
             <button type="button" className="primary-cta" onClick={scrollToInquiry}>
-              REQUEST SPECIFICATION SHEET <br />
-              <span className="text-[11px] font-normal tracking-widest block opacity-90">
-                (YÊU CẦU BẢNG THÔNG SỐ KỸ THUẬT)
-              </span>
+              {lang === "vi" ? "YÊU CẦU BẢNG THÔNG SỐ KỸ THUẬT" : "REQUEST SPECIFICATION SHEET"}
             </button>
             <p className="audience">
-              FOR SYSTEM INTEGRATORS &bull; CONTRACTORS &bull; DESIGNERS &bull; DEALERS <br />
-              <span className="text-[#d8b391] text-xs normal-case tracking-normal block mt-1">
-                DÀNH CHO ĐƠN VỊ TÍCH HỢP HỆ THỐNG &bull; NHÀ THẦU &bull; KTS THIẾT KẾ &bull; ĐẠI LÝ
-              </span>
+              {lang === "vi"
+                ? "DÀNH CHO ĐƠN VỊ TÍCH HỢP HỆ THỐNG • NHÀ THẦU • KTS THIẾT KẾ • ĐẠI LÝ"
+                : "FOR SYSTEM INTEGRATORS • CONTRACTORS • DESIGNERS • DEALERS"}
             </p>
             <img
               className="control-image"
@@ -477,25 +533,29 @@ export default function SublimePage() {
         {/* Compatible Section */}
         <section className="compatible section-soft2">
           <div className="narrow-center">
-            <p className="mini">The Industry&apos;s Unresolved Tension.</p>
-            <p className="text-sm text-[#cfc6bc] italic -mt-6 mb-4">
-              (Thách thức chưa có lời giải của ngành nhà thông minh)
+            <p className="mini">
+              {lang === "vi"
+                ? "Trăn trở chưa có lời giải của ngành Smart Home."
+                : "The Industry's Unresolved Tension."}
             </p>
             <p className="lede">
-              Premium aesthetics, but plastic performance. Rugged reliability, but zero visual consideration. <br />
-              <span className="text-base text-[#d8b391] font-serif block mt-2 normal-case">
-                Thẩm mỹ cao cấp nhưng hiệu năng kém, hoặc bền bỉ nhưng thô ráp thiếu tinh tế.
-              </span>
+              {lang === "vi"
+                ? "Thẩm mỹ sang trọng nhưng hiệu năng kém, hoặc bền bỉ nhưng thiếu tinh tế."
+                : "Premium aesthetics, but plastic performance. Rugged reliability, but zero visual consideration."}
             </p>
-            <h2>SUBLIME resolves this.</h2>
-            <p className="text-2xl font-serif italic text-[#dcb796] -mt-6 mb-6">
-              SUBLIME chính là câu trả lời hoàn hảo.
-            </p>
+            <h2>
+              {lang === "vi" ? "SUBLIME mang tới lời giải hoàn hảo." : "SUBLIME resolves this."}
+            </h2>
             <p className="section-desc">
-              Architectural refinement and protocol-grade engineering in a single platform. <br />
-              <span className="text-lg text-[#cfc6bc] font-sans normal-case block mt-2">
-                Sự tinh xảo về kiến trúc kết hợp cùng kỹ nghệ chuẩn mực công nghiệp trên một nền tảng duy nhất.
-              </span>
+              {lang === "vi" ? (
+                <>
+                  Sự tinh xảo về kiến trúc <br /> và kỹ nghệ chuẩn công nghiệp hội tụ trên một nền tảng duy nhất.
+                </>
+              ) : (
+                <>
+                  Architectural refinement <br /> and protocol-grade engineering in a single platform.
+                </>
+              )}
             </p>
           </div>
           <div className="control-video-shell">
@@ -529,26 +589,31 @@ export default function SublimePage() {
         <section className="section-dark">
           <div className="section-grid">
             <div>
-              <p className="eyebrow">Advantage 01 / Ưu điểm 01</p>
+              <p className="eyebrow">Advantage 01</p>
               <h2>
-                Control4 Compatible.
-                <br />
-                More Choices for Every Project.
+                {lang === "vi" ? (
+                  <>
+                    Tương thích hoàn hảo với Control4.
+                    <br />
+                    Thêm giải pháp tối ưu cho mọi công trình.
+                  </>
+                ) : (
+                  <>
+                    Control4 Compatible.
+                    <br />
+                    More Choices for Every Project.
+                  </>
+                )}
               </h2>
-              <p className="text-lg text-[#d8b391] font-serif italic -mt-16 mb-8">
-                Tương thích hoàn hảo với Control4. Đa dạng lựa chọn cho mọi công trình.
+              <p>
+                {lang === "vi"
+                  ? "Các đại lý và đơn vị tích hợp Control4 giờ đây có thêm một lựa chọn đột phá. Dù thi công công trình mới hay cải tạo hệ thống hiện hữu, mặt công tắc Sublime kết nối mượt mà qua bộ Bridge, mang lại diện mạo kiến trúc hiện đại cho mọi dự án Control4."
+                  : "Control4 Dealers And Integrators Now Have A New Dimension Of Choice. Whether Specifying For New Construction Or Upgrading An Existing Installation, Sublime Panels Connect Seamlessly Via Bridge, Delivering Contemporary Architectural Presence To Any Control4 Project."}
               </p>
               <p>
-                Control4 Dealers And Integrators Now Have A New Dimension Of Choice. Sublime Panels Connect Seamlessly Via Bridge, Delivering Contemporary Architectural Presence To Any Control4 Project.
-              </p>
-              <p className="text-sm text-[#cfc6bc] normal-case -mt-4 mb-6">
-                Các đại lý và nhà tích hợp Control4 giờ đây có thêm sự lựa chọn đột phá. Công tắc Sublime kết nối mượt mà qua bộ Bridge, mang lại phong cách kiến trúc hiện đại đẳng cấp cho mọi công trình Control4.
-              </p>
-              <p className="font-bold text-[#d8b391]">
-                Same System. New Standard Of Wall Aesthetics. <br />
-                <span className="font-normal text-sm text-[#cfc6bc] normal-case">
-                  (Cùng một hệ thống. Chuẩn mực mới cho thẩm mỹ không gian tường.)
-                </span>
+                {lang === "vi"
+                  ? "Giữ nguyên hệ thống. Thiết lập chuẩn mực mới cho thẩm mỹ mảng tường."
+                  : "Same System. New Standard Of Wall Aesthetics."}
               </p>
             </div>
             <figure className="diagram-media">
@@ -562,70 +627,65 @@ export default function SublimePage() {
           <div className="no-walls-row">
             <article className="no-walls-copy">
               <h3>
-                No Walls Broken. <br /> Total Renovation Freedom.
+                {lang === "vi" ? (
+                  <>
+                    Giữ nguyên cấu trúc tường. <br /> Tự do cải tạo không giới hạn.
+                  </>
+                ) : (
+                  <>
+                    No Walls Broken. <br /> Total Renovation Freedom.
+                  </>
+                )}
               </h3>
-              <p className="text-xl text-[#d8b391] font-serif italic -mt-12 mb-8">
-                Giữ nguyên cấu trúc tường. Tự do cải tạo và nâng cấp tối đa.
-              </p>
               <div className="no-walls-grid mobile">
                 <article>
                   <h4>FORM Flush-Mount Actuators</h4>
-                  <h3>In-Wall or In-Ceiling Deployment</h3>
+                  <h3>{lang === "vi" ? "Lắp đặt Âm tường hoặc Âm trần" : "In-Wall or In-Ceiling Deployment"}</h3>
                   <p>
-                    Fits standard 80/86/120mm back boxes or conceals seamlessly within ceiling voids. Perfect for localized room control.
-                    <br />
-                    <span className="text-xs text-[#cfc6bc] block mt-2">
-                      (Tương thích đế âm chuẩn 80/86/120mm hoặc giấu kín trên trần thạch cao. Tối ưu cho điều khiển theo phòng.)
-                    </span>
+                    {lang === "vi"
+                      ? "Tương thích đế âm chuẩn 80/86/120mm hoặc giấu kín trên trần thạch cao. Tối ưu cho điều khiển theo từng khu vực phòng."
+                      : "Fits standard 80/86/120mm back boxes or conceals seamlessly within ceiling voids. Perfect for localized room control."}
                   </p>
                 </article>
                 <article>
                   <h4>FORM Track Actuators</h4>
-                  <h3>Centralized Distribution</h3>
+                  <h3>{lang === "vi" ? "Phân phối trung tâm tủ điện" : "Centralized Distribution"}</h3>
                   <p>
-                    Snaps onto standard DIN rails within the central tech closet. Ideal for high-density, multi-channel lighting and HVAC scheduling.
-                    <br />
-                    <span className="text-xs text-[#cfc6bc] block mt-2">
-                      (Gắn thanh DIN-Rail tiêu chuẩn trong tủ điện trung tâm. Hoàn hảo cho điều khiển chiếu sáng đa kênh & HVAC mật độ cao.)
-                    </span>
+                    {lang === "vi"
+                      ? "Gắn trực tiếp lên thanh DIN-Rail tiêu chuẩn trong tủ điện trung tâm. Lý tưởng cho điều khiển chiếu sáng đa kênh mật độ cao và điều hòa trung tâm."
+                      : "Snaps onto standard DIN rails within the central tech closet. Ideal for high-density, multi-channel lighting and HVAC scheduling."}
                   </p>
                 </article>
               </div>
               <p>
-                One Platform, Ultimate Renovation Freedom. Sublime Completely Decouples The Slim Touch Interface From The Heavy Switching Hardware.
+                {lang === "vi"
+                  ? "Một nền tảng duy nhất đem lại sự linh hoạt tối đa khi cải tạo. Sublime tách biệt hoàn toàn mặt cảm ứng siêu mỏng với bộ công tắc công suất nặng bên trong."
+                  : "One Platform, Ultimate Renovation Freedom. Sublime Completely Decouples The Slim Touch Interface From The Heavy Switching Hardware."}
               </p>
-              <p className="text-sm text-[#cfc6bc] normal-case -mt-4 mb-4">
-                Một nền tảng duy nhất, mang lại tự do cải tạo tuyệt đối. Sublime tách biệt hoàn toàn mặt cảm ứng siêu mỏng với bộ công tắc công suất nặng bên trong.
+              <p>
+                {lang === "vi"
+                  ? "Dễ dàng thích ứng với đế âm tiêu chuẩn 80/86/120mm, giấu kín trên trần thạch cao hoặc tủ điện DIN-Rail trung tâm—tương thích hoàn hảo với mọi hạ tầng công trình hiện hữu. Thi công theo cách của bạn, nâng tầm không gian tức thì."
+                  : "Whether Adapting To Legacy 80/86/120Mm Back Boxes, Ceiling Voids, Or Remote Din-Rails—It Fits Any Existing Site Infrastructure Perfectly. Install It Your Way, Instantly Upgrade The Space."}
               </p>
             </article>
 
             <div className="no-walls-grid pc">
               <article>
                 <h4>FORM Flush-Mount Actuators</h4>
-                <h3>In-Wall or In-Ceiling Deployment</h3>
-                <p className="text-xs text-[#d8b391] italic -mt-4 mb-3">
-                  (Bộ chấp hành âm tường & âm trần)
-                </p>
+                <h3>{lang === "vi" ? "Lắp đặt Âm tường hoặc Âm trần" : "In-Wall or In-Ceiling Deployment"}</h3>
                 <p>
-                  Fits standard 80/86/120mm back boxes or conceals seamlessly within ceiling voids. Perfect for localized room control.
-                  <br />
-                  <span className="text-xs text-[#cfc6bc] block mt-2">
-                    (Tương thích đế âm chuẩn 80/86/120mm hoặc giấu kín trên trần thạch cao. Tối ưu cho điều khiển từng phòng.)
-                  </span>
+                  {lang === "vi"
+                    ? "Tương thích đế âm chuẩn 80/86/120mm hoặc giấu kín trên trần thạch cao. Tối ưu cho điều khiển theo từng khu vực phòng."
+                    : "Fits standard 80/86/120mm back boxes or conceals seamlessly within ceiling voids. Perfect for localized room control."}
                 </p>
               </article>
               <article>
                 <h4>FORM Track Actuators</h4>
-                <h3>Centralized Distribution</h3>
-                <p className="text-xs text-[#d8b391] italic -mt-4 mb-3">
-                  (Bộ chấp hành tủ điện DIN-Rail)
-                </p>
+                <h3>{lang === "vi" ? "Phân phối trung tâm tủ điện" : "Centralized Distribution"}</h3>
                 <p>
-                  Snaps onto standard DIN rails within the central tech closet. Ideal for high-density, multi-channel lighting and HVAC scheduling.
-                  <br />
-                  <span className="text-xs text-[#cfc6bc] block mt-2">
-                    (Gắn thanh DIN-Rail tiêu chuẩn trong tủ điện trung tâm. Hoàn hảo cho hệ thống chiếu sáng & điều hòa trung tâm.)
-                  </span>
+                  {lang === "vi"
+                    ? "Gắn trực tiếp lên thanh DIN-Rail tiêu chuẩn trong tủ điện trung tâm. Lý tưởng cho điều khiển chiếu sáng đa kênh mật độ cao và điều hòa trung tâm."
+                    : "Snaps onto standard DIN rails within the central tech closet. Ideal for high-density, multi-channel lighting and HVAC scheduling."}
                 </p>
               </article>
             </div>
@@ -663,46 +723,41 @@ export default function SublimePage() {
           </div>
           <div className="fusion-content">
             <div className="fusion-copy">
-              <p className="eyebrow">Advantage 02 / Ưu điểm 02</p>
+              <p className="eyebrow">Advantage 02</p>
               <h2>
-                Fusion Link:<br />Wired or Wireless. Not a Choice.
+                {lang === "vi" ? (
+                  <>
+                    Fusion Link:<br />Có dây hay Không dây. Không cần đánh đổi.
+                  </>
+                ) : (
+                  <>
+                    Fusion Link:<br />Wired or Wireless. Not a Choice.
+                  </>
+                )}
               </h2>
-              <p className="text-xl text-[#d8b391] font-serif italic -mt-12 mb-8">
-                Fusion Link: Linh hoạt Có dây hay Không dây. Không cần phải đánh đổi.
-              </p>
               <p>
-                Fusion Link is LifeSmart&apos;s hybrid IoT architecture. Both wired and wireless signal modules are built into the product, deploy what the project demands.
-              </p>
-              <p className="text-sm text-[#cfc6bc] normal-case -mt-4 mb-4">
-                Fusion Link là kiến trúc IoT lai độc quyền của LifeSmart. Tích hợp sẵn cả mô-đun tín hiệu có dây và không dây, đáp ứng mọi yêu cầu khắt khe của công trình.
+                {lang === "vi"
+                  ? "Fusion Link là kiến trúc IoT lai độc quyền của LifeSmart. Tích hợp đồng thời cả mô-đun tín hiệu có dây và không dây, linh hoạt triển khai theo đúng nhu cầu công trình."
+                  : "Fusion Link is LifeSmart's hybrid IoT architecture. Both wired and wireless signal modules are built into the product, deploy what the project demands."}
               </p>
             </div>
             <div className="bullet-grid">
               <div>
-                <p>Wired-only? (Thuần Có dây?)</p>
-                <h3>CoTP token-pass protocol</h3>
-                <h3>Hardware-grade reliability.</h3>
-                <h3>Zero network dependency.</h3>
-                <span className="text-xs text-[#cfc6bc] block mt-2">
-                  (Giao thức CoTP độ tin cậy phần cứng cao, hoạt động độc lập không phụ thuộc mạng)
-                </span>
+                <p>{lang === "vi" ? "Chỉ dùng Có dây?" : "Wired-only?"}</p>
+                <h3>{lang === "vi" ? "Giao thức truyền thẻ CoTP" : "CoTP token-pass protocol"}</h3>
+                <h3>{lang === "vi" ? "Độ tin cậy chuẩn phần cứng" : "Hardware-grade reliability."}</h3>
+                <h3>{lang === "vi" ? "Hoạt động độc lập không phụ thuộc mạng" : "Zero network dependency."}</h3>
               </div>
               <div>
-                <p>Wireless-only? (Thuần Không dây?)</p>
-                <h3>CoSS ultra-long-range mesh</h3>
-                <h3>Self-healing network</h3>
-                <h3>No cabling required.</h3>
-                <span className="text-xs text-[#cfc6bc] block mt-2">
-                  (Giao thức CoSS sóng siêu xa, mạng lưới tự chữa lành, không cần đi dây tín hiệu)
-                </span>
+                <p>{lang === "vi" ? "Chỉ dùng Không dây?" : "Wireless-only?"}</p>
+                <h3>{lang === "vi" ? "Mạng Mesh sóng siêu xa CoSS" : "CoSS ultra-long-range mesh"}</h3>
+                <h3>{lang === "vi" ? "Mạng tự khôi phục liên kết" : "Self-healing network"}</h3>
+                <h3>{lang === "vi" ? "Không cần đi dây tín hiệu" : "No cabling required."}</h3>
               </div>
               <div>
-                <p>Both? (Cả Hai?)</p>
-                <h3>A single platform running dual protocols</h3>
-                <h3>No hardware swap needed.</h3>
-                <span className="text-xs text-[#cfc6bc] block mt-2">
-                  (Một nền tảng chạy song song hai giao thức, không cần thay thế phần cứng)
-                </span>
+                <p>{lang === "vi" ? "Dùng cả Hai?" : "Both?"}</p>
+                <h3>{lang === "vi" ? "Một nền tảng vận hành song song hai giao thức" : "A single platform running dual protocols"}</h3>
+                <h3>{lang === "vi" ? "Không cần thay thế phần cứng" : "No hardware swap needed."}</h3>
               </div>
             </div>
           </div>
@@ -727,22 +782,17 @@ export default function SublimePage() {
               />
             </figure>
             <div>
-              <p className="eyebrow">Advantage 03 / Ưu điểm 03</p>
-              <h2>Versatile Finishes.</h2>
-              <p className="text-xl text-[#d8b391] font-serif italic -mt-12 mb-8">
-                Đa dạng chất liệu hoàn thiện thượng lưu.
+              <p className="eyebrow">Advantage 03</p>
+              <h2>{lang === "vi" ? "Đa dạng chất liệu hoàn thiện thượng lưu." : "Versatile Finishes."}</h2>
+              <p>
+                {lang === "vi"
+                  ? "Mặt công tắc SUBLIME được thiết kế may đo theo phong cách kiến trúc: Kim loại phay xước, lớp phủ di sản nhám mịn, đá Mica tự nhiên—mỗi chất liệu đều được lựa chọn kỹ lưỡng để giữ nguyên vẻ đẹp đẳng cấp theo thời gian."
+                  : "SUBLIME faceplates are specified, not selected. Brushed metal, matte heritage finishes, natural mica, each material chosen for how it ages in situ, not how it photographs."}
               </p>
               <p>
-                SUBLIME faceplates are specified, not selected. Brushed metal, matte heritage finishes, natural mica, each material chosen for how it ages in situ.
-              </p>
-              <p className="text-sm text-[#cfc6bc] normal-case -mt-4 mb-6">
-                Mặt công tắc SUBLIME được may đo theo thiết kế kiến trúc: Kim loại phay xước, lớp phủ di sản nhám mịn, đá Mica tự nhiên—mỗi chất liệu đều bền đẹp trường tồn theo thời gian.
-              </p>
-              <p>
-                Magnetic-mount architecture enables tool-free faceplate swap. Specify the finish per room; change it per season.
-              </p>
-              <p className="text-sm text-[#cfc6bc] normal-case -mt-4 mb-4">
-                Cấu trúc ngàm từ tính hít thông minh cho phép tháo lắp mặt công tắc dễ dàng không cần công cụ. Tùy biến màu sắc theo từng phòng hoặc theo từng mùa trong năm.
+                {lang === "vi"
+                  ? "Cấu trúc ngàm từ tính hít thông minh cho phép thay đổi mặt công tắc dễ dàng không cần dụng cụ. Tùy biến chất liệu theo từng phòng hoặc thay đổi theo từng mùa trong năm."
+                  : "Magnetic-mount architecture enables tool-free faceplate swap. Specify the finish per room; change it per season."}
               </p>
             </div>
           </div>
@@ -768,68 +818,75 @@ export default function SublimePage() {
         <section className="forms section-soft2">
           <div className="section-heading">
             <h2>
-              9 Forms, 8 Sizes, 50+ Finishes.
-              <br />
-              Infinite Architectural Possibilities.
+              {lang === "vi" ? (
+                <>
+                  9 Kiểu dáng, 8 Kích thước, 50+ Chất liệu.
+                  <br />
+                  Khả năng thiết kế kiến trúc vô tận.
+                </>
+              ) : (
+                <>
+                  9 Forms, 8 Sizes, 50+ Finishes.
+                  <br />
+                  Infinite Architectural Possibilities.
+                </>
+              )}
             </h2>
-            <p className="text-xl text-[#d8b391] font-serif italic mt-3">
-              9 Kiểu dáng, 8 Kích thước, 50+ Chất liệu hoàn thiện. Khả năng thiết kế kiến trúc vô tận.
-            </p>
           </div>
           <div className="forms-grid">
             <article>
               <div className="product-tile small" />
               <h3>Classic</h3>
               <p>86*86mm &middot; Dune Gold</p>
-              <span>Standard module range: outlets, USB, Ethernet <br />(Tích hợp đầy đủ ổ cắm, cổng USB, mạng LAN)</span>
+              <span>{lang === "vi" ? "Mô-đun tiêu chuẩn: Ổ cắm, USB, Mạng LAN" : "Standard module range: outlets, USB, Ethernet"}</span>
             </article>
             <article>
               <div className="product-tile tall" />
               <h3>Standard</h3>
               <p>86*150mm &middot; Hammered Dawn Gold</p>
-              <span>Multi-standard back box adapter (80/86/120) <br />(Tương thích mọi loại đế âm tiêu chuẩn)</span>
+              <span>{lang === "vi" ? "Tương thích mọi loại đế âm tiêu chuẩn (80/86/120)" : "Multi-standard back box adapter (80/86/120)"}</span>
             </article>
             <article>
               <div className="product-tile wide" />
               <h3>Pro 6</h3>
               <p>172*150mm &middot; Feather Moonlight Silver</p>
-              <span>Button + text + screen unified interaction <br />(Tương tác hợp nhất Nút bấm + Chữ + Màn hình)</span>
+              <span>{lang === "vi" ? "Tương tác hợp nhất Nút bấm + Chữ + Màn hình" : "Button + text + screen unified interaction"}</span>
             </article>
             <article>
               <div className="product-tile wide black" />
               <h3>Pro 8</h3>
               <p>172*150mm &middot; Shining Obsidian Black</p>
-              <span>Button + text + screen unified interaction <br />(Tương tác hợp nhất Nút bấm + Chữ + Màn hình)</span>
+              <span>{lang === "vi" ? "Tương tác hợp nhất Nút bấm + Chữ + Màn hình" : "Button + text + screen unified interaction"}</span>
             </article>
             <article>
               <div className="product-tile max" />
               <h3>Max</h3>
               <p>258*150mm &middot; Silk Imperial Gold</p>
-              <span>Full-space control: lighting, shading, HVAC, scenes <br />(Điều khiển toàn diện: Đèn, Rèm, Điều hòa, Kịch bản)</span>
+              <span>{lang === "vi" ? "Điều khiển toàn diện: Đèn, Rèm, Điều hòa, Kịch bản" : "Full-space control: lighting, shading, HVAC, scenes"}</span>
             </article>
             <article>
               <div className="product-tile ultra" />
               <h3>Ultra</h3>
               <p>316*170mm &middot; Oil Painting Patina Jade</p>
-              <span>SUBLIME OS / AirTalk Offline voice / intercom <br />(Hệ điều hành SUBLIME OS / Trợ lý giọng nói Offline)</span>
+              <span>{lang === "vi" ? "Hệ điều hành SUBLIME OS / Trợ lý giọng nói Offline" : "SUBLIME OS / AirTalk Offline voice / intercom"}</span>
             </article>
             <article>
               <div className="product-tile slider" />
               <h3>Slider pro</h3>
               <p>172*86mm &middot; Damascus Obsidian Black</p>
-              <span>Buttons + Slider <br />(Kết hợp Nút bấm & Thanh trượt cảm ứng)</span>
+              <span>{lang === "vi" ? "Kết hợp Nút bấm & Thanh trượt cảm ứng" : "Buttons + Slider"}</span>
             </article>
             <article>
               <div className="product-tile bedside" />
               <h3>Bedside Pro</h3>
               <p>316*86mm &middot; Shining Obsidian Black</p>
-              <span>8 buttons and a 5-pin layout <br />(8 Nút bấm chuyên dụng cho đầu giường)</span>
+              <span>{lang === "vi" ? "8 Nút bấm chuyên dụng cho khu vực đầu giường" : "8 buttons and a 5-pin layout"}</span>
             </article>
             <article>
               <div className="product-tile line" />
               <h3>The Line</h3>
               <p>316*42mm &middot; Mirror Steel Radiant Gold</p>
-              <span>3.5mm profile / Wall, desk, cabinetry integration <br />(Độ mỏng 3.5mm / Tích hợp âm tường, bàn, tủ gỗ)</span>
+              <span>{lang === "vi" ? "Độ mỏng 3.5mm / Tích hợp âm tường, bàn, tủ gỗ" : "3.5mm profile / Wall, desk, cabinetry integration"}</span>
             </article>
           </div>
         </section>
@@ -840,56 +897,46 @@ export default function SublimePage() {
             <img src="/sublime_tob/assets/scenery.webp" alt="SUBLIME project scenery" />
           </div>
           <div className="section-grid">
-            <p className="eyebrow">Partnerships / Đối tác đồng hành</p>
+            <p className="eyebrow">{lang === "vi" ? "Hợp tác phát triển" : "Partnerships"}</p>
             <h2>
-              Built for Partners <br /> Who <span className="italic">Specify the Best</span>
+              {lang === "vi" ? (
+                <>
+                  Đồng hành cùng những Đối tác <br /> Luôn <span className="italic">lựa chọn giải pháp tốt nhất</span>
+                </>
+              ) : (
+                <>
+                  Built for Partners <br /> Who <span className="italic">Specify the Best</span>
+                </>
+              )}
             </h2>
-            <p className="text-xl text-[#d8b391] font-serif italic -mt-12 mb-8">
-              Kiến tạo dành riêng cho những đối tác luôn lựa chọn giải pháp cao cấp nhất.
-            </p>
           </div>
 
           <div className="partner-grid">
             <article>
               <h4>01</h4>
-              <h3>High-Value Product Category</h3>
-              <p className="text-[#d8b391] text-sm font-serif italic -mt-3 mb-3">
-                (Dòng sản phẩm giá trị thương mại cao)
-              </p>
+              <h3>{lang === "vi" ? "Dòng sản phẩm giá trị cao" : "High-Value Product Category"}</h3>
               <p>
-                Premium-positioned product line with healthy margin structure. A category that elevates your proposal, not just your product list.
-                <br />
-                <span className="text-xs text-[#cfc6bc] block mt-2">
-                  (Dòng sản phẩm phân khúc siêu sang với chính sách chiết khấu hấp dẫn, nâng tầm hồ sơ năng lực dự án của bạn.)
-                </span>
+                {lang === "vi"
+                  ? "Sản phẩm phân khúc siêu sang với cơ cấu lợi nhuận hấp dẫn. Dòng sản phẩm giúp nâng tầm hồ sơ năng lực dự án của bạn."
+                  : "Premium-positioned product line with healthy margin structure. A category that elevates your proposal, not just your product list."}
               </p>
             </article>
             <article>
               <h4>02</h4>
-              <h3>Dedicated Technical Support</h3>
-              <p className="text-[#d8b391] text-sm font-serif italic -mt-3 mb-3">
-                (Hỗ trợ kỹ thuật chuyên sâu 24/7)
-              </p>
+              <h3>{lang === "vi" ? "Hỗ trợ kỹ thuật chuyên sâu" : "Dedicated Technical Support"}</h3>
               <p>
-                24/7 technical assistance for specification, installation, and commissioning. You ship with confidence.
-                <br />
-                <span className="text-xs text-[#cfc6bc] block mt-2">
-                  (Đội ngũ kỹ sư hỗ trợ bóc tách tư vấn, thiết kế thi công và nghiệm thu 24/7 giúp bạn hoàn toàn yên tâm triển khai.)
-                </span>
+                {lang === "vi"
+                  ? "Hỗ trợ kỹ thuật 24/7 từ khâu tư vấn thiết kế, thi công lắp đặt đến nghiệm thu. Bạn hoàn toàn yên tâm triển khai."
+                  : "24/7 technical assistance for specification, installation, and commissioning. You ship with confidence."}
               </p>
             </article>
             <article>
               <h4>03</h4>
-              <h3>Marketing & Specification Support</h3>
-              <p className="text-[#d8b391] text-sm font-serif italic -mt-3 mb-3">
-                (Tài liệu truyền thông & catalog mẫu)
-              </p>
+              <h3>{lang === "vi" ? "Hỗ trợ truyền thông & Hồ sơ thầu" : "Marketing & Specification Support"}</h3>
               <p>
-                Co-branded collateral, project photography, and specification documents, ready for your next proposal.
-                <br />
-                <span className="text-xs text-[#cfc6bc] block mt-2">
-                  (Cung cấp đầy đủ file CAD, catalog đồng thương hiệu, hình ảnh công thực tế sẵn sàng cho hồ sơ thầu.)
-                </span>
+                {lang === "vi"
+                  ? "Cung cấp catalog mẫu, hình ảnh công trình thực tế và tài liệu kỹ thuật sẵn sàng cho hồ sơ dự án của bạn."
+                  : "Co-branded collateral, project photography, and specification documents, ready for your next proposal."}
               </p>
             </article>
           </div>
@@ -899,20 +946,20 @@ export default function SublimePage() {
         <section id="inquiry-form" className="block-form section-soft2">
           <div className="block-form-cont border border_mb">
             <div className="content">
-              <p className="eyebrow">INQUIRY / ĐĂNG KÝ TƯ VẤN</p>
-              <h2 className="title">GET A QUOTE / NHẬN BÁO GIÁ DỰ ÁN</h2>
+              <p className="eyebrow">{lang === "vi" ? "ĐĂNG KÝ TƯ VẤN" : "INQUIRY"}</p>
+              <h2 className="title">{lang === "vi" ? "NHẬN BÁO GIÁ DỰ ÁN" : "GET A QUOTE"}</h2>
               <div className="block-form-wrapper">
                 <div className="block-form-tabbar-title">
-                  You are a/an (Bạn là):
+                  {lang === "vi" ? "Vai trò của bạn:" : "You are a/an:"}
                 </div>
                 <div className="block-form-tabbar">
-                  {roles.map((roleObj, idx) => (
+                  {currentRoles.map((roleText, idx) => (
                     <div
-                      key={roleObj.en}
+                      key={roleText}
                       className={`block-form-tabbar-item ${activeRoleIndex === idx ? "on" : ""}`}
                       onClick={() => setActiveRoleIndex(idx)}
                     >
-                      {roleObj.en} <span className="text-xs opacity-75 ml-1">({roleObj.vi})</span>
+                      {roleText}
                     </div>
                   ))}
                 </div>
@@ -920,14 +967,14 @@ export default function SublimePage() {
                 <form id="overseaForm" onSubmit={handleFormSubmit}>
                   <div className="block-form-row">
                     <div className="item-col2">
-                      <div className="title">Your Name (Họ và tên):</div>
+                      <div className="title">{lang === "vi" ? "Họ và tên của bạn:" : "Your Name:"}</div>
                       <input
                         id="contactName"
                         maxLength={128}
                         name="name"
                         type="text"
                         className="block-form-input"
-                        placeholder="Your first and last name (Họ và tên đầy đủ)"
+                        placeholder={lang === "vi" ? "Họ và tên đầy đủ" : "Your first and last name"}
                         value={formName}
                         onChange={(e) => setFormName(e.target.value)}
                       />
@@ -935,28 +982,28 @@ export default function SublimePage() {
 
                     {activeRoleIndex === 3 ? (
                       <div className="item-col2 join">
-                        <div className="title">Home Size (Diện tích căn hộ/Biệt thự):</div>
+                        <div className="title">{lang === "vi" ? "Diện tích căn hộ (m2):" : "Home Size:"}</div>
                         <input
                           id="contactArea"
                           maxLength={64}
                           name="area"
                           type="text"
                           className="block-form-input"
-                          placeholder="Please enter your home's size in m2 (Ví dụ: 350 m2)"
+                          placeholder={lang === "vi" ? "Nhập diện tích căn hộ/biệt thự (m2)" : "Please enter your home's size in m2"}
                           value={formArea}
                           onChange={(e) => setFormArea(e.target.value)}
                         />
                       </div>
                     ) : (
                       <div className="item-col2 design">
-                        <div className="title">Company (Tên công ty / Đơn vị):</div>
+                        <div className="title">{lang === "vi" ? "Tên công ty / Đơn vị:" : "Company:"}</div>
                         <input
                           id="contactCompany"
                           maxLength={128}
                           name="company"
                           type="text"
                           className="block-form-input"
-                          placeholder="Your company name (Tên công ty của bạn)"
+                          placeholder={lang === "vi" ? "Tên công ty của bạn" : "Your company name"}
                           value={formCompany}
                           onChange={(e) => setFormCompany(e.target.value)}
                         />
@@ -966,20 +1013,20 @@ export default function SublimePage() {
 
                   <div className="block-form-row">
                     <div className="item-col2">
-                      <div className="title">E-mail (Địa chỉ Email):</div>
+                      <div className="title">{lang === "vi" ? "Địa chỉ Email:" : "E-mail:"}</div>
                       <input
                         id="contactEmail"
                         maxLength={64}
                         name="email"
                         type="text"
                         className="block-form-input"
-                        placeholder="Work email is preferred (Email làm việc)"
+                        placeholder={lang === "vi" ? "Ưu tiên Email làm việc" : "Work email is preferred"}
                         value={formEmail}
                         onChange={(e) => setFormEmail(e.target.value)}
                       />
                     </div>
                     <div className={`item-col2 block-form-col ${countryDropdownOpen ? "is-open" : ""}`}>
-                      <div className="title">Country/Region (Quốc gia / Khu vực):</div>
+                      <div className="title">{lang === "vi" ? "Quốc gia / Khu vực:" : "Country/Region:"}</div>
                       <div className="select-field">
                         <input
                           id="contactCountry"
@@ -987,7 +1034,7 @@ export default function SublimePage() {
                           name="country"
                           type="text"
                           className="block-form-input"
-                          placeholder="Select an option (Chọn Quốc gia)"
+                          placeholder={lang === "vi" ? "Chọn Quốc gia" : "Select an option"}
                           value={countrySelected ? countrySelected.en : countryInput}
                           onFocus={() => setCountryDropdownOpen(true)}
                           onChange={(e) => {
@@ -1003,7 +1050,9 @@ export default function SublimePage() {
                       </div>
                       <div id="block-form-options" className={countryDropdownOpen ? "show" : ""}>
                         {filteredCountries.length === 0 ? (
-                          <div className="block-form-empty p-3 text-[#cfc6bc88]">No data / Không có dữ liệu</div>
+                          <div className="block-form-empty p-3 text-[#cfc6bc88]">
+                            {lang === "vi" ? "Không có dữ liệu" : "no data"}
+                          </div>
                         ) : (
                           filteredCountries.map((country) => (
                             <div
@@ -1025,21 +1074,21 @@ export default function SublimePage() {
 
                   <div className="block-form-row">
                     <div className="item-col2">
-                      <div className="title">Contact Number (Số điện thoại / Zalo):</div>
+                      <div className="title">{lang === "vi" ? "Số điện thoại / Zalo:" : "Contact Number:"}</div>
                       <input
                         id="contactConcat"
                         maxLength={64}
                         name="concat"
                         type="text"
                         className="block-form-input"
-                        placeholder="Your phone number or WhatsApp (Số điện thoại)"
+                        placeholder={lang === "vi" ? "Số điện thoại liên hệ" : "Your phone number or WhatsApp"}
                         value={formConcat}
                         onChange={(e) => setFormConcat(e.target.value)}
                       />
                     </div>
 
                     <div className={`item-col2 block-form-col ${interestDropdownOpen ? "is-open" : ""}`}>
-                      <div className="title">You are interested in (Giải pháp quan tâm):</div>
+                      <div className="title">{lang === "vi" ? "Giải pháp bạn quan tâm:" : "You are interested in:"}</div>
                       <div className="select-field">
                         <input
                           id="contactInterested"
@@ -1047,7 +1096,7 @@ export default function SublimePage() {
                           name="interested"
                           type="text"
                           className="block-form-input cursor-pointer"
-                          placeholder="Select your interest (Chọn giải pháp)"
+                          placeholder={lang === "vi" ? "Chọn giải pháp" : "Select your interest"}
                           value={selectedInterestedText}
                           readOnly
                           onFocus={() => setInterestDropdownOpen(true)}
@@ -1063,37 +1112,41 @@ export default function SublimePage() {
                         id="block-form-interest-options"
                         className={`interested-options ${interestDropdownOpen ? "show" : ""}`}
                       >
-                        {[
-                          "Wireless Smart Home (Smart Home Không dây)",
-                          "Wired Smart Home (Smart Home Có dây Bus)"
-                        ].map((opt) => (
-                          <div
-                            key={opt}
-                            className={`block-form-option ${interestedOptions[opt] ? "on" : ""}`}
-                            onMouseDown={(ev) => {
-                              ev.preventDefault();
-                              setInterestedOptions((prev) => ({
-                                ...prev,
-                                [opt]: !prev[opt]
-                              }));
-                            }}
-                          >
-                            {opt}
-                          </div>
-                        ))}
+                        {interestedOptionsList.map((optObj) => {
+                          const isSelected = interestedOptions[optObj.en];
+                          return (
+                            <div
+                              key={optObj.en}
+                              className={`block-form-option ${isSelected ? "on" : ""}`}
+                              onMouseDown={(ev) => {
+                                ev.preventDefault();
+                                setInterestedOptions((prev) => ({
+                                  ...prev,
+                                  [optObj.en]: !prev[optObj.en]
+                                }));
+                              }}
+                            >
+                              {lang === "vi" ? optObj.vi : optObj.en}
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
 
                   <div className="block-form-row">
                     <div className="item-col">
-                      <div className="title">Describe your needs (Mô tả chi tiết yêu cầu dự án):</div>
+                      <div className="title">{lang === "vi" ? "Mô tả chi tiết nhu cầu:" : "Describe your needs:"}</div>
                       <textarea
                         id="contactContent"
                         maxLength={1024}
                         name="content"
                         className="block-form-textarea"
-                        placeholder="Please provide a detailed description of your requirements (Thông tin số lượng phòng, loại công trình...)"
+                        placeholder={
+                          lang === "vi"
+                            ? "Vui lòng mô tả chi tiết yêu cầu của bạn (số lượng phòng, loại công trình...)"
+                            : "Please provide a detailed description of your requirements"
+                        }
                         value={formContent}
                         onChange={(e) => setFormContent(e.target.value)}
                       />
@@ -1101,15 +1154,16 @@ export default function SublimePage() {
                   </div>
 
                   <div className="block-form-tip">
-                    We respect your confidentiality and all information is protected. <br />
-                    <span className="text-xs">
-                      (Chúng tôi cam kết bảo mật tuyệt đối mọi thông tin dự án của bạn.)
-                    </span>
+                    {lang === "vi"
+                      ? "Chúng tôi cam kết bảo mật tuyệt đối mọi thông tin của bạn."
+                      : "We respect your confidentiality and all information is protected."}
                   </div>
 
                   <div className="block-form-box">
                     <button className="block-form-button" type="submit" disabled={formLoading}>
-                      {formLoading ? "SUBMITTING..." : "SUBMIT APPLICATION (GỬI YÊU CẦU)"}
+                      {formLoading
+                        ? lang === "vi" ? "ĐANG GỬI..." : "SUBMITTING..."
+                        : lang === "vi" ? "GỬI YÊU CẦU BÁO GIÁ" : "SUBMIT APPLICATION"}
                     </button>
                   </div>
                 </form>
@@ -1140,9 +1194,35 @@ export default function SublimePage() {
           aria-label="Close image preview"
           onClick={() => setLightboxOpen(false)}
         >
-          Close (Đóng)
+          {lang === "vi" ? "Đóng" : "Close"}
         </button>
         {lightboxSrc && <img src={lightboxSrc} alt="SUBLIME Large preview" />}
+      </div>
+
+      {/* Floating Language Widget pinned at corner of screen */}
+      <div className="fixed bottom-6 left-6 z-50 flex items-center bg-[#0d0d0d]/90 border border-[#d8b391]/40 rounded-full p-1.5 backdrop-blur-md shadow-2xl">
+        <button
+          type="button"
+          onClick={() => setLang("vi")}
+          className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+            lang === "vi"
+              ? "bg-[#ccae8d] text-[#0a0a0a] shadow-md scale-105"
+              : "text-[#d8b391]/70 hover:text-[#d8b391]"
+          }`}
+        >
+          🇻🇳 VN
+        </button>
+        <button
+          type="button"
+          onClick={() => setLang("en")}
+          className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+            lang === "en"
+              ? "bg-[#ccae8d] text-[#0a0a0a] shadow-md scale-105"
+              : "text-[#d8b391]/70 hover:text-[#d8b391]"
+          }`}
+        >
+          🇬🇧 EN
+        </button>
       </div>
 
       {/* Floating Inquiry Trigger */}
