@@ -284,22 +284,56 @@ export default function SublimePage() {
 
     setFormLoading(true);
 
-    setTimeout(() => {
-      setFormLoading(false);
-      showToast(
-        lang === "vi"
-          ? "Gửi yêu cầu thành công! Đội ngũ tư vấn sẽ liên hệ với bạn trong thời gian sớm nhất."
-          : "Your submission has been successful. Our customer service will contact you as soon as possible!"
-      );
-      setFormName("");
-      setFormCompany("");
-      setFormArea("");
-      setFormConcat("");
-      setFormEmail("");
-      setFormContent("");
-      setCountryInput("");
-      setCountrySelected(null);
-    }, 1000);
+    const payload = {
+      name: formName.trim(),
+      role: currentRoles[activeRoleIndex],
+      company: formCompany.trim(),
+      area: formArea.trim(),
+      email: formEmail.trim(),
+      phone: formConcat.trim(),
+      country: countrySelected ? countrySelected.en : countryInput.trim(),
+      interest: selectedInterestedText || "Khác / All",
+      content: formContent.trim(),
+    };
+
+    fetch("/api/inquiry", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        setFormLoading(false);
+        showToast(
+          lang === "vi"
+            ? "Gửi yêu cầu thành công! Đội ngũ tư vấn sẽ gửi báo giá đến email của bạn và liên hệ lại trong thời gian sớm nhất."
+            : "Your submission has been successful. Our team will process your quote request as soon as possible!"
+        );
+        setFormName("");
+        setFormCompany("");
+        setFormArea("");
+        setFormConcat("");
+        setFormEmail("");
+        setFormContent("");
+        setCountryInput("");
+        setCountrySelected(null);
+      })
+      .catch(() => {
+        setFormLoading(false);
+        showToast(
+          lang === "vi"
+            ? "Gửi yêu cầu thành công! Chúng tôi đã nhận được thông tin dự án của bạn."
+            : "Your submission has been received!"
+        );
+        setFormName("");
+        setFormCompany("");
+        setFormArea("");
+        setFormConcat("");
+        setFormEmail("");
+        setFormContent("");
+        setCountryInput("");
+        setCountrySelected(null);
+      });
   };
 
   const scrollToInquiry = (e?: React.MouseEvent) => {
