@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import QuoteModal from "@/components/QuoteModal";
 import "./sublime.css";
 
 const COUNTRY_LIST_EN = [
@@ -390,51 +391,50 @@ export default function SublimePage() {
             title="Thạch Anh ITT Official Site"
           >
             <img
-              className="h-[18px] sm:h-[20px] w-auto object-contain max-w-[130px] sm:max-w-[170px]"
+              className="h-[22px] sm:h-[26px] w-auto object-contain max-w-[150px] sm:max-w-[200px]"
               src="/sublime_tob/assets/logo-thachanhitt-gold.png"
               alt="Thạch Anh ITT Logo"
             />
           </a>
         </div>
 
-        <div className="flex items-center gap-4">
-          {/* Header Language Switcher */}
-          <div className="flex items-center bg-[#171210] border border-[#d8b391]/30 rounded-full p-1 text-xs">
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* Header Language Switcher */}
+            <div className="flex items-center bg-[#171210] border border-[#d8b391]/30 rounded-full p-1 text-xs">
+              <button
+                type="button"
+                onClick={() => setLang("vi")}
+                className={`px-3 py-1 rounded-full transition-all ${
+                  lang === "vi"
+                    ? "bg-[#ccae8d] text-[#1e1612] font-bold shadow"
+                    : "text-[#d8b391]/70 hover:text-[#d8b391]"
+                }`}
+              >
+                VN
+              </button>
+              <button
+                type="button"
+                onClick={() => setLang("en")}
+                className={`px-3 py-1 rounded-full transition-all ${
+                  lang === "en"
+                    ? "bg-[#ccae8d] text-[#1e1612] font-bold shadow"
+                    : "text-[#d8b391]/70 hover:text-[#d8b391]"
+                }`}
+              >
+                EN
+              </button>
+            </div>
+
+            {/* Yêu cầu tư vấn Button at Header */}
             <button
               type="button"
-              onClick={() => setLang("vi")}
-              className={`px-3 py-1 rounded-full transition-all ${
-                lang === "vi"
-                  ? "bg-[#ccae8d] text-[#1e1612] font-bold shadow"
-                  : "text-[#d8b391]/70 hover:text-[#d8b391]"
-              }`}
+              onClick={() => setQuoteModalOpen(true)}
+              className="bg-gradient-to-r from-[#ccae8d] to-[#d8b391] hover:from-[#d8b391] hover:to-[#e6c4a5] text-[#120e0c] font-bold text-xs px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full shadow-lg transition-transform hover:scale-105 active:scale-95"
             >
-              VN
-            </button>
-            <button
-              type="button"
-              onClick={() => setLang("en")}
-              className={`px-3 py-1 rounded-full transition-all ${
-                lang === "en"
-                  ? "bg-[#ccae8d] text-[#1e1612] font-bold shadow"
-                  : "text-[#d8b391]/70 hover:text-[#d8b391]"
-              }`}
-            >
-              EN
+              {lang === "vi" ? "Yêu cầu tư vấn" : "Request Consultation"}
             </button>
           </div>
-
-          <a
-            className="brand-link hidden sm:inline-flex"
-            href="https://iot.ilifesmart.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Open LifeSmart official site"
-          >
-            <span className="site-label">LifeSmart Official Site</span>
-          </a>
-        </div>
-      </header>
+        </header>
 
       <main>
         {/* Hero Section */}
@@ -1284,6 +1284,9 @@ export default function SublimePage() {
       >
         <img src="/sublime_tob/assets/inquiry.webp" alt="Inquiry Icon" />
       </button>
+
+      {/* Quote Modal */}
+      <QuoteModal isOpen={quoteModalOpen} onClose={() => setQuoteModalOpen(false)} />
     </div>
   );
 }

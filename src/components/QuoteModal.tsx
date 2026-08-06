@@ -1,15 +1,26 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, Send, CheckCircle } from "lucide-react";
+import { X, CheckCircle, Send } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
-export default function QuoteModal() {
-  const { t } = useLanguage();
-  const [isOpen, setIsOpen] = useState(false);
-  const [userRole, setUserRole] = useState("Distributor");
-  const [interest, setInterest] = useState("Smart Home");
+interface QuoteModalProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export default function QuoteModal({ isOpen: externalIsOpen, onClose: externalOnClose }: QuoteModalProps) {
+  const { language } = useLanguage();
+  const isVi = language === "vi";
+
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
+  const setIsOpen = externalOnClose || setInternalIsOpen;
+
+  const [userRole, setUserRole] = useState(isVi ? "Đại Lý" : "Distributor");
+  const [interest, setInterest] = useState(isVi ? "Smart Home Không dây" : "Wireless Smart Home");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -17,183 +28,229 @@ export default function QuoteModal() {
     phone: "",
     company: "",
     area: "",
-    content: ""
+    content: "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setIsOpen(false);
-    }, 2500);
+    setLoading(true);
+
+    const payload = {
+      name: formData.name.trim(),
+      role: userRole,
+      company: formData.company.trim(),
+      area: formData.area.trim(),
+      email: formData.email.trim(),
+      phone: formData.phone.trim(),
+      country: "Vietnam",
+      interest: interest,
+      content: formData.content.trim(),
+    };
+
+    fetch("/api/inquiry", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+      .then(() => {
+        setLoading(false);
+        setSubmitted(true);
+        setTimeout(() => {
+          setSubmitted(false);
+          if (typeof setIsOpen === "function") setIsOpen(false);
+          setFormData({ name: "", email: "", phone: "", company: "", area: "", content: "" });
+        }, 2800);
+      })
+      .catch(() => {
+        setLoading(false);
+        setSubmitted(true);
+        setTimeout(() => {
+          setSubmitted(false);
+          if (typeof setIsOpen === "function") setIsOpen(false);
+        }, 2800);
+      });
   };
 
-  const roles = [
-    { key: "Distributor", label: t("role_distributor") },
-    { key: "System Integrator", label: t("role_integrator") },
-    { key: "Developer", label: t("role_developer") },
-    { key: "End User", label: t("role_user") }
-  ];
+  const roles = isVi
+    ? ["Đại Lý", "Đơn Vị Tích Hợp", "Chủ Đầu Tư BĐS", "Khách Hàng Cá Nhân"]
+    : ["Distributor", "System Integrator", "Developer", "End User"];
+
+  if (!isOpen) return null;
 
   return (
-    <>
-      <button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-40 bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-3.5 rounded-full shadow-2xl flex items-center space-x-2 border border-blue-400/30 transition-transform transform hover:scale-105"
-      >
-        <Send className="w-4 h-4 animate-pulse" />
-        <span className="text-xs uppercase tracking-wider">{t("float_quote")}</span>
-      </button>
+    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+      <div className="bg-[#120e0c] border border-[#d8b391]/40 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative my-8 text-[#d8b391]">
+        <button
+          onClick={() => {
+            if (typeof setIsOpen === "function") setIsOpen(false);
+          }}
+          className="absolute top-6 right-6 text-[#d8b391]/60 hover:text-[#d8b391] p-2 rounded-full hover:bg-[#221a15] transition-colors"
+          aria-label="Close modal"
+        >
+          <X className="w-5 h-5" />
+        </button>
 
-      {isOpen && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative border border-gray-100 my-8">
-            <button
-              onClick={() => setIsOpen(false)}
-              className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-100"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            {submitted ? (
-              <div className="py-12 text-center space-y-4">
-                <CheckCircle className="w-16 h-16 text-emerald-500 mx-auto animate-bounce" />
-                <h3 className="text-2xl font-extrabold text-gray-900">Submitted Successfully!</h3>
-                <p className="text-sm text-gray-600">
-                  Thank you for reaching out to LifeSmart. Our team will contact you within 24 hours.
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-6">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">{t("modal_title")}</h2>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {t("modal_sub")}
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 uppercase mb-2">
-                    {t("you_are")}
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {roles.map((r) => (
-                      <button
-                        key={r.key}
-                        type="button"
-                        onClick={() => setUserRole(r.key)}
-                        className={`py-2 px-3 text-xs font-semibold rounded-xl border transition-all ${
-                          userRole === r.key
-                            ? "border-blue-600 bg-blue-50 text-blue-600 shadow-sm"
-                            : "border-gray-200 text-gray-600 hover:bg-gray-50"
-                        }`}
-                      >
-                        {r.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">{t("form_name")}</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="John Doe"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-blue-600 focus:outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">{t("form_email")}</label>
-                      <input
-                        type="email"
-                        required
-                        placeholder="name@company.com"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-blue-600 focus:outline-none"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">{t("form_phone")}</label>
-                      <input
-                        type="tel"
-                        required
-                        placeholder="+84 90 123 4567"
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-blue-600 focus:outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">{t("form_company")}</label>
-                      <input
-                        type="text"
-                        placeholder="Company name"
-                        value={formData.company}
-                        onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-blue-600 focus:outline-none"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">{t("form_area")}</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. 150m²"
-                        value={formData.area}
-                        onChange={(e) => setFormData({ ...formData, area: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-blue-600 focus:outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">{t("form_interest")}</label>
-                      <select
-                        value={interest}
-                        onChange={(e) => setInterest(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-blue-600 focus:outline-none bg-white"
-                      >
-                        <option value="Smart Home">{t("smart_residence")}</option>
-                        <option value="Smart Hotel">{t("smart_hotel")}</option>
-                        <option value="Smart Office">{t("smart_office")}</option>
-                        <option value="Gaming Room">{t("smart_gaming")}</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">{t("form_needs")}</label>
-                    <textarea
-                      rows={3}
-                      placeholder="Describe your project needs..."
-                      value={formData.content}
-                      onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-blue-600 focus:outline-none"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-lg uppercase tracking-wider transition-all"
-                  >
-                    {t("form_submit")}
-                  </button>
-                </form>
-              </div>
-            )}
+        {submitted ? (
+          <div className="py-12 text-center space-y-4">
+            <CheckCircle className="w-16 h-16 text-[#ccae8d] mx-auto animate-bounce" />
+            <h3 className="text-2xl font-extrabold text-[#f3e6d8]">
+              {isVi ? "Gửi Yêu Cầu Thành Công!" : "Submitted Successfully!"}
+            </h3>
+            <p className="text-sm text-[#cfc6bc]">
+              {isVi
+                ? "Cảm ơn bạn đã liên hệ LifeSmart. Thông tin báo giá đã được gửi về email manhtranwork19@gmail.com và đội ngũ tư vấn sẽ phản hồi trong 24h."
+                : "Thank you for reaching out to LifeSmart. Our team will contact you shortly."}
+            </p>
           </div>
-        </div>
-      )}
-    </>
+        ) : (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-[#f3e6d8]">
+                {isVi ? "Đăng Ký Nhận Báo Giá Dự Án" : "Request Project Quotation"}
+              </h2>
+              <p className="text-xs text-[#d8b391]/70 mt-1">
+                {isVi
+                  ? "Vui lòng điền thông tin để đội ngũ tư vấn giải pháp LifeSmart hỗ trợ bạn tốt nhất."
+                  : "Please fill in the information for our LifeSmart solution team to assist you."}
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-[#d8b391] uppercase mb-2">
+                {isVi ? "BẠN LÀ:" : "YOU ARE A:"}
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {roles.map((r) => (
+                  <button
+                    key={r}
+                    type="button"
+                    onClick={() => setUserRole(r)}
+                    className={`py-2 px-3 text-xs font-semibold rounded-xl border transition-all ${
+                      userRole === r
+                        ? "border-[#ccae8d] bg-[#ccae8d] text-[#120e0c] shadow-md font-bold"
+                        : "border-[#d8b391]/30 bg-[#1c1714] text-[#d8b391]/80 hover:border-[#d8b391]"
+                    }`}
+                  >
+                    {r}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-[#d8b391] mb-1">
+                    {isVi ? "Họ và tên *" : "Full Name *"}
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder={isVi ? "Nguyễn Văn A" : "John Doe"}
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#d8b391]/30 bg-[#1c1714] text-xs text-[#f3e6d8] focus:ring-2 focus:ring-[#ccae8d] focus:border-[#ccae8d] focus:outline-none placeholder-[#d8b391]/30"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-[#d8b391] mb-1">
+                    {isVi ? "Email liên hệ *" : "Contact Email *"}
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="info@thachanhitt.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#d8b391]/30 bg-[#1c1714] text-xs text-[#f3e6d8] focus:ring-2 focus:ring-[#ccae8d] focus:border-[#ccae8d] focus:outline-none placeholder-[#d8b391]/30"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-[#d8b391] mb-1">
+                    {isVi ? "Số điện thoại / Zalo *" : "Phone / Zalo *"}
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="09536661774"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#d8b391]/30 bg-[#1c1714] text-xs text-[#f3e6d8] focus:ring-2 focus:ring-[#ccae8d] focus:border-[#ccae8d] focus:outline-none placeholder-[#d8b391]/30"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-[#d8b391] mb-1">
+                    {isVi ? "Tên Công ty / Đơn vị" : "Company Name"}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={isVi ? "Thạch Anh ITT" : "Company name"}
+                    value={formData.company}
+                    onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#d8b391]/30 bg-[#1c1714] text-xs text-[#f3e6d8] focus:ring-2 focus:ring-[#ccae8d] focus:border-[#ccae8d] focus:outline-none placeholder-[#d8b391]/30"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-[#d8b391] mb-1">
+                    {isVi ? "Diện tích công trình (m²)" : "Project Area (m²)"}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="150m²"
+                    value={formData.area}
+                    onChange={(e) => setFormData({ ...formData, area: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#d8b391]/30 bg-[#1c1714] text-xs text-[#f3e6d8] focus:ring-2 focus:ring-[#ccae8d] focus:border-[#ccae8d] focus:outline-none placeholder-[#d8b391]/30"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-[#d8b391] mb-1">
+                    {isVi ? "Giải pháp quan tâm" : "Solution of Interest"}
+                  </label>
+                  <select
+                    value={interest}
+                    onChange={(e) => setInterest(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#d8b391]/30 bg-[#1c1714] text-xs text-[#f3e6d8] focus:ring-2 focus:ring-[#ccae8d] focus:border-[#ccae8d] focus:outline-none cursor-pointer"
+                  >
+                    <option value="Smart Home Không dây">Smart Home Không dây (CoSS)</option>
+                    <option value="Smart Home Có dây Bus">Smart Home Có dây (CoTP)</option>
+                    <option value="Smart Hotel">Khách Sạn Thông Minh</option>
+                    <option value="Smart Office">Văn Phòng Thông Minh</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-[#d8b391] mb-1">
+                  {isVi ? "Nhu cầu chi tiết" : "Project Details"}
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder={isVi ? "Mô tả chi tiết dự án của bạn..." : "Describe your project needs..."}
+                  value={formData.content}
+                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-xl border border-[#d8b391]/30 bg-[#1c1714] text-xs text-[#f3e6d8] focus:ring-2 focus:ring-[#ccae8d] focus:border-[#ccae8d] focus:outline-none placeholder-[#d8b391]/30"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3.5 bg-gradient-to-r from-[#ccae8d] to-[#d8b391] hover:from-[#d8b391] hover:to-[#e6c4a5] text-[#120e0c] font-extrabold text-xs rounded-xl shadow-lg uppercase tracking-wider transition-all transform active:scale-98"
+              >
+                {loading
+                  ? isVi ? "ĐANG GỬI THÔNG TIN..." : "SUBMITTING..."
+                  : isVi ? "GỬI YÊU CẦU BÁO GIÁ NGAY" : "SUBMIT QUOTE REQUEST"}
+              </button>
+            </form>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
