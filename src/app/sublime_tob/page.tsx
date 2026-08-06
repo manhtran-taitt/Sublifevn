@@ -348,11 +348,19 @@ export default function SublimePage() {
             alt="SUBLIME"
           />
           <span className="h-4 sm:h-5 w-[1px] bg-[#d8b391]/30 block" />
-          <img
-            className="h-5 sm:h-6 w-auto object-contain max-w-[140px] sm:max-w-[180px]"
-            src="/sublime_tob/assets/logo-thachanhitt-scaled.png"
-            alt="Thạch Anh ITT Logo"
-          />
+          <a
+            href="https://thachanhitt.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center hover:opacity-80 transition-opacity"
+            title="Thạch Anh ITT Official Site"
+          >
+            <img
+              className="h-[18px] sm:h-[20px] w-auto object-contain max-w-[130px] sm:max-w-[170px]"
+              src="/sublime_tob/assets/logo-thachanhitt-gold.png"
+              alt="Thạch Anh ITT Logo"
+            />
+          </a>
         </div>
 
         <div className="flex items-center gap-4">
