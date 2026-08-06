@@ -10,7 +10,7 @@ export default function Footer() {
   const pathname = usePathname();
   const { t } = useLanguage();
 
-  if (pathname?.startsWith("/sublime")) {
+  if (pathname === "/" || pathname?.startsWith("/sublime")) {
     return null;
   }
 

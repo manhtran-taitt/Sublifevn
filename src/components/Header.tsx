@@ -13,7 +13,7 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [expandedMobileCategory, setExpandedMobileCategory] = useState<string | null>(null);
 
-  if (pathname?.startsWith("/sublime")) {
+  if (pathname === "/" || pathname?.startsWith("/sublime")) {
     return null;
   }
 
