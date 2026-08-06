@@ -93,8 +93,8 @@ export default function SublimePage() {
   // Quote Modal State
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
 
-  // Control Video Audio Delayed Start State (5 Seconds)
-  const [controlAudioStart, setControlAudioStart] = useState(false);
+  // Control Video Mute State
+  const [controlMuted, setControlMuted] = useState(true);
 
   // Product Fader Carousel State
   const [activeSlide, setActiveSlide] = useState(0);
@@ -156,16 +156,18 @@ export default function SublimePage() {
   const movedRef = useRef(false);
   const halfWidthRef = useRef(0);
 
-  // Video fallback refs
+  // Video refs
   const heroLocalRef = useRef<HTMLVideoElement>(null);
   const controlLocalRef = useRef<HTMLVideoElement>(null);
-  const [useLocalHeroVideo, setUseLocalHeroVideo] = useState(false);
-  const [useLocalControlVideo, setUseLocalControlVideo] = useState(false);
 
-  // Delayed 5s Control Video Audio Timer
+  // Delayed 5s Unmute Timer for Control Video
   useEffect(() => {
     const timer = setTimeout(() => {
-      setControlAudioStart(true);
+      setControlMuted(false);
+      if (controlLocalRef.current) {
+        controlLocalRef.current.muted = false;
+        controlLocalRef.current.play().catch(() => {});
+      }
     }, 5000);
     return () => clearTimeout(timer);
   }, []);
@@ -408,7 +410,7 @@ export default function SublimePage() {
         </div>
 
         <div className="flex items-center gap-3 sm:gap-4">
-          {/* Header Language Switcher */}
+          {/* Header Language Switcher (Standalone Pill) */}
           <div className="flex items-center bg-[#171210] border border-[#d8b391]/30 rounded-full p-1 text-xs">
             <button
               type="button"
@@ -432,43 +434,32 @@ export default function SublimePage() {
             >
               EN
             </button>
-            {/* Yêu cầu tư vấn Button at Header */}
-            <button
-              type="button"
-              onClick={() => setQuoteModalOpen(true)}
-              className="bg-gradient-to-r from-[#ccae8d] to-[#d8b391] hover:from-[#d8b391] hover:to-[#e6c4a5] text-[#120e0c] font-bold text-xs px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full shadow-lg transition-transform hover:scale-105 active:scale-95 whitespace-nowrap"
-            >
-              {lang === "vi" ? "Yêu cầu tư vấn" : "Request Consultation"}
-            </button>
           </div>
+
+          {/* Yêu cầu tư vấn Button (Desktop Only Standalone Pill) */}
+          <button
+            type="button"
+            onClick={() => setQuoteModalOpen(true)}
+            className="hidden sm:inline-flex bg-gradient-to-r from-[#ccae8d] to-[#d8b391] hover:from-[#d8b391] hover:to-[#e6c4a5] text-[#120e0c] font-bold text-xs px-4 py-2 rounded-full shadow-lg transition-transform hover:scale-105 active:scale-95 whitespace-nowrap"
+          >
+            {lang === "vi" ? "Yêu cầu tư vấn" : "Request Consultation"}
+          </button>
         </div>
       </header>
 
       <main>
         {/* Hero Section */}
         <section className="hero" aria-label="Architectural Switching">
-          {!useLocalHeroVideo ? (
-            <iframe
-              id="heroYoutube"
-              className="hero-video youtube-hero is-active"
-              src="https://www.youtube.com/embed/r6bD85uCTLA?autoplay=1&mute=1&controls=0&loop=1&playlist=r6bD85uCTLA&playsinline=1&rel=0&modestbranding=1&disablekb=1&fs=0&iv_load_policy=3&enablejsapi=1"
-              title="SUBLIME hero video"
-              frameBorder="0"
-              allow="autoplay; encrypted-media; picture-in-picture"
-              referrerPolicy="strict-origin-when-cross-origin"
-            />
-          ) : (
-            <video
-              ref={heroLocalRef}
-              className="hero-video hero-local-fallback is-active"
-              src="/sublime_tob/assets/banner.mp4"
-              autoPlay
-              loop
-              muted
-              playsInline
-              aria-hidden="true"
-            />
-          )}
+          <video
+            ref={heroLocalRef}
+            className="hero-video hero-local-fallback is-active object-cover w-full h-full"
+            src="/sublime_tob/assets/banner.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            aria-hidden="true"
+          />
           <div className="hero-overlay" />
         </section>
 
@@ -615,34 +606,18 @@ export default function SublimePage() {
               )}
             </p>
           </div>
-          <div className="control-video-shell">
-            {!useLocalControlVideo ? (
-              <iframe
-                id="controlYoutube"
-                className="control-video control-youtube"
-                src={
-                  controlAudioStart
-                    ? "https://www.youtube.com/embed/ohrEHPSA7Vo?autoplay=1&mute=0&controls=1&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1"
-                    : "https://www.youtube.com/embed/ohrEHPSA7Vo?autoplay=1&mute=1&controls=1&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1"
-                }
-                title="SUBLIME control video"
-                frameBorder="0"
-                allow="autoplay; encrypted-media; picture-in-picture"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-                onError={() => setUseLocalControlVideo(true)}
-              />
-            ) : (
-              <video
-                ref={controlLocalRef}
-                className="control-video control-local-fallback is-active"
-                src="/sublime_tob/assets/control.mp4"
-                controls
-                autoPlay
-                playsInline
-                aria-hidden="true"
-              />
-            )}
+          <div className="control-video-shell overflow-hidden rounded-2xl">
+            <video
+              ref={controlLocalRef}
+              className="control-video control-local-fallback is-active w-full h-auto rounded-2xl"
+              src="/sublime_tob/assets/control.mp4"
+              controls
+              autoPlay
+              loop
+              muted={controlMuted}
+              playsInline
+              aria-label="SUBLIME control video"
+            />
           </div>
         </section>
 
@@ -1260,22 +1235,14 @@ export default function SublimePage() {
         {lightboxSrc && <img src={lightboxSrc} alt="SUBLIME Large preview" />}
       </div>
 
-      {/* Sticky Bottom Floating Bar ("Sticker khi kéo") - Mobile ONLY */}
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2.5 bg-[#0a0a0a]/90 border border-[#d8b391]/40 rounded-full p-2 backdrop-blur-md shadow-2xl max-w-[94vw] sm:hidden">
-        <button
-          type="button"
-          onClick={() => setQuoteModalOpen(true)}
-          className="bg-gradient-to-r from-[#ccae8d] to-[#d8b391] hover:from-[#d8b391] hover:to-[#e6c4a5] text-[#120e0c] font-bold text-xs px-4 py-2 rounded-full shadow-lg transition-transform active:scale-95 whitespace-nowrap"
-        >
-          {lang === "vi" ? "Yêu cầu tư vấn" : "Request Consultation"}
-        </button>
-
+      {/* Sticky Bottom Floating Bar - Mobile ONLY (Calls tel:+84853164350) */}
+      <div className="fixed bottom-5 right-5 z-40 sm:hidden">
         <a
           href="tel:+84853164350"
-          className="flex items-center gap-1.5 bg-[#1f1916] hover:bg-[#2c231f] border border-[#d8b391]/50 text-[#f3e6d8] font-bold text-xs px-4 py-2 rounded-full shadow-lg transition-transform active:scale-95 whitespace-nowrap"
+          className="flex items-center gap-2 bg-[#1f1916]/95 hover:bg-[#2c231f] border border-[#d8b391]/60 text-[#f3e6d8] font-bold text-xs px-4 py-2.5 rounded-full shadow-2xl backdrop-blur-md active:scale-95 whitespace-nowrap"
           title="Gọi ngay hotline +84 85 316 4350"
         >
-          <svg className="w-3.5 h-3.5 text-[#ccae8d] animate-bounce" fill="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-[#ccae8d] animate-bounce" fill="currentColor" viewBox="0 0 24 24">
             <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
           </svg>
           <span>{lang === "vi" ? "Gọi ngay" : "Call now"}</span>
