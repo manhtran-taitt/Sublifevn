@@ -16,15 +16,6 @@ const nextConfig = {
     unoptimized: true,
   },
   reactStrictMode: true,
-  async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/sublime_tob',
-        permanent: false,
-      },
-    ];
-  },
   async rewrites() {
     return [
       {
