@@ -606,17 +606,20 @@ export default function SublimePage() {
               )}
             </p>
           </div>
-          <div className="control-video-shell overflow-hidden rounded-2xl">
-            <video
-              ref={controlLocalRef}
-              className="control-video control-local-fallback is-active w-full h-auto rounded-2xl"
-              src="/sublime_tob/assets/control.mp4"
-              controls
-              autoPlay
-              loop
-              muted={controlMuted}
-              playsInline
-              aria-label="SUBLIME control video"
+          <div className="control-video-shell">
+            <iframe
+              id="controlYoutube"
+              className="control-video control-youtube"
+              src={
+                !controlMuted
+                  ? "https://www.youtube.com/embed/ohrEHPSA7Vo?autoplay=1&mute=0&controls=1&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1"
+                  : "https://www.youtube.com/embed/ohrEHPSA7Vo?autoplay=1&mute=1&controls=1&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1"
+              }
+              title="SUBLIME control video"
+              frameBorder="0"
+              allow="autoplay; encrypted-media; picture-in-picture"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
             />
           </div>
         </section>
