@@ -470,12 +470,12 @@ export default function SublimePage() {
               {lang === "vi" ? (
                 <>
                   HỆ THỐNG TỰ ĐỘNG HÓA NHÀ THÔNG MINH LAI ĐỘC BẢN <br />
-                  SUBLIME <span className="italic"> bởi LifeSmart </span>
+                  SUBLIME <span className="italic"> bởi Thạch Anh ITT </span>
                 </>
               ) : (
                 <>
                   THE SOVEREIGN HYBRID HOME AUTOMATION SYSTEM <br />
-                  SUBLIME <span className="italic"> by LifeSmart </span>
+                  SUBLIME <span className="italic"> by Thạch Anh ITT </span>
                 </>
               )}
             </h2>
