@@ -99,8 +99,8 @@ export default function QuoteModal({ isOpen: externalIsOpen, onClose: externalOn
             </h3>
             <p className="text-sm text-[#cfc6bc]">
               {isVi
-                ? "Cảm ơn bạn đã liên hệ LifeSmart. Thông tin báo giá đã được gửi về email manhtranwork19@gmail.com và đội ngũ tư vấn sẽ phản hồi trong 24h."
-                : "Thank you for reaching out to LifeSmart. Our team will contact you shortly."}
+                ? "Cảm ơn bạn đã gửi mail cho Thạch Anh ITT, Chuyên viên sẽ liên hệ bạn trong thời gian ngắn nhất"
+                : "Thank you for contacting Thạch Anh ITT. Our specialist will contact you shortly."}
             </p>
           </div>
         ) : (
