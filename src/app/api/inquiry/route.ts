@@ -3,13 +3,14 @@ import { NextResponse } from "next/server";
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const { name, role, company, area, email, phone, country, interest, content } = data;
+    const { name, role, company, area, email, phone, country, interest, content, formType } = data;
 
     const submittedAt = new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
+    const finalFormType = formType || "Yêu cầu báo giá";
 
     // Log submitted lead details
     console.log("=== NEW SUBLIME INQUIRY SUBMISSION ===");
-    console.log(`Recipient Email: manhtranwork19@gmail.com`);
+    console.log(`Form Type: ${finalFormType}`);
     console.log(`Customer Name: ${name}`);
     console.log(`Role: ${role}`);
     console.log(`Phone/Zalo: ${phone}`);
@@ -29,6 +30,7 @@ export async function POST(request: Request) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          formType: finalFormType,
           name,
           role,
           phone,
@@ -54,9 +56,10 @@ export async function POST(request: Request) {
         },
         body: JSON.stringify({
           access_key: "f7a3717e-c80b-4db4-90ef-8e7c5364177d",
-          subject: `[DỰ ÁN SUBLIME] Yêu cầu báo giá mới từ ${name}`,
+          subject: `[${finalFormType.toUpperCase()}] từ ${name}`,
           from_name: "SUBLIME Landing Page",
           to_email: "manhtranwork19@gmail.com",
+          formType: finalFormType,
           name,
           role,
           phone,

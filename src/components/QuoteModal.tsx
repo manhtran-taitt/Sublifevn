@@ -36,6 +36,7 @@ export default function QuoteModal({ isOpen: externalIsOpen, onClose: externalOn
     setLoading(true);
 
     const payload = {
+      formType: "Yêu cầu tư vấn (Pop-up Quick)",
       name: formData.name.trim(),
       role: userRole,
       company: formData.company.trim(),

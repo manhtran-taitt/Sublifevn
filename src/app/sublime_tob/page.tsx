@@ -298,6 +298,7 @@ export default function SublimePage() {
     setFormLoading(true);
 
     const payload = {
+      formType: "Nhận báo giá dự án (Footer Form)",
       name: formName.trim(),
       role: currentRoles[activeRoleIndex],
       company: formCompany.trim(),
